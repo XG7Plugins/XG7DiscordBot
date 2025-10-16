@@ -4,10 +4,12 @@ import {
     CommandInteraction,
     CommandInteractionOptionResolver
 } from "discord.js";
+import {ComponentHandler} from "./Components";
 
 interface CommandDeclaration {
     data: ApplicationCommandData;
     isGlobal?: boolean;
+    componentHandlers?: Array<ComponentHandler<any>>
     run(props: CommandProps): any;
 }
 

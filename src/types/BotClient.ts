@@ -14,12 +14,14 @@ import {Command} from "./Command";
 import fileS from "fs";
 import path from "path";
 import {Listener} from "./Event";
+import {ComponentHandler} from "./Components";
 
 export * from "colors";
 
 export class BotClient extends Client {
 
     public commands: Collection<string, Command> = new Collection();
+    public componentHandlers: Collection<string, ComponentHandler<any>> = new Collection();
 
     constructor() {
         super({
@@ -32,6 +34,7 @@ export class BotClient extends Client {
     }
 
     public init() {
+        this.registerComponentsHandlers();
         this.registerEvents();
         this.registerCommands();
         this.login(process.env.BOT_TOKEN).then(() => console.log("Bot logado com sucesso!".rainbow));
@@ -51,6 +54,11 @@ export class BotClient extends Client {
                     const command: Command = (await import (`../commands/${cmdPath}/${cmdFile}`))?.default
 
                     this.commands.set(command.declaration.data.name, command);
+
+                    if (command.declaration.componentHandlers) {
+                        this.componentHandlers.set(command.declaration.componentHandlers[0].id, command.declaration.componentHandlers[0]);
+                    }
+
                     (command.declaration.isGlobal ? globalCommands : guildCommands).push(command.declaration.data);
                 })
         })
@@ -88,6 +96,21 @@ export class BotClient extends Client {
         })
 
         console.log("Eventos registrados com sucesso!")
+    }
+
+    private registerComponentsHandlers() {
+        fileS.readdirSync(path.join(__dirname, "..", "components", "handlers"))
+            .filter(file => file.endsWith(".js") || file.endsWith(".ts"))
+            .forEach(async (handlersFile) => {
+
+                const handlers: ComponentHandler<any> = (await import (`../components/handlers/${handlersFile}`))?.default;
+
+                try {
+                    this.componentHandlers.set(handlers.id, handlers);
+                } catch (err) {
+                    console.log(err)
+                }
+            })
     }
 
 
