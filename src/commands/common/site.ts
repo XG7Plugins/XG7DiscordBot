@@ -1,10 +1,6 @@
 import {Command} from "../../types/Command";
-import {
-    ButtonBuilder,
-    ContainerBuilder, MessageFlags, SectionBuilder, SeparatorBuilder, TextDisplayBuilder,
-    ThumbnailBuilder, ButtonStyle
-
-} from "discord.js";
+import { MessageFlags } from "discord.js";
+import SiteComponent from "../../components/template/site";
 
 export default new Command({
     data: {
@@ -15,22 +11,9 @@ export default new Command({
 
     run({ interaction }) {
 
-
-        const thumbSection = new SectionBuilder()
-            .addTextDisplayComponents(new TextDisplayBuilder().setContent("Veja o Site do XG7Plugins!"))
-            .setThumbnailAccessory(new ThumbnailBuilder().setURL("https://xg7plugins.com/images/logo.png").setDescription("BUIOFSDA"))
-        const buttonSection = new SectionBuilder()
-            .addTextDisplayComponents(new TextDisplayBuilder().setContent("Entre no link: "))
-            .setButtonAccessory(new ButtonBuilder().setURL("https://xg7plugins.com/").setLabel("XG7Plugins").setStyle(ButtonStyle.Link))
-
-        const container = new ContainerBuilder()
-            .addSectionComponents(thumbSection)
-            .addSeparatorComponents(new SeparatorBuilder())
-            .addSectionComponents(buttonSection)
-
         interaction.reply({
-            components: [container],
-            flags: MessageFlags.IsComponentsV2
+            components: [SiteComponent()],
+            flags: [MessageFlags.IsComponentsV2, MessageFlags.Ephemeral ],
         });
 
     }

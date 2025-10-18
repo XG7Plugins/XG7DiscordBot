@@ -3,7 +3,6 @@ import {Listener} from "../../types/Event";
 import {CommandInteractionOptionResolver} from "discord.js";
 
 export default new Listener({
-    once: true,
     type: "interactionCreate",
     handle(interaction: any): any {
         if (!interaction.isCommand()) return;

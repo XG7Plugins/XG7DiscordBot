@@ -1,5 +1,5 @@
 import {BotClient} from "./types/BotClient";
-import config from "./types/config.json";
+import config from "./data/config.json";
 
 export * from "colors";
 

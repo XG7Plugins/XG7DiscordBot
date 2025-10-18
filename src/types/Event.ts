@@ -2,8 +2,8 @@ import {ClientEvents} from "discord.js";
 
 export type EventType<Key extends keyof ClientEvents> = {
     type: Key,
-    once?: boolean,
-    handle(...args: ClientEvents[Key]): any;
+    once?: boolean | false,
+    handle(...event: ClientEvents[Key]): any;
 };
 
 export class Listener<Key extends keyof ClientEvents> {
