@@ -69,8 +69,8 @@ export class BotClient extends Client {
             try {
                 console.log(`Started refreshing ${globalCommands.length + guildCommands.length} application (/) commands.`);
 
-                await rest.put(Routes.applicationGuildCommands(String(config.bot_id), String(config.main_guild)), {body: guildCommands});
-                await rest.put(Routes.applicationCommands(String(config.bot_id)), {body: globalCommands});
+                await rest.put(Routes.applicationGuildCommands(config.bot_id, config.main_guild), {body: guildCommands});
+                await rest.put(Routes.applicationCommands(config.bot_id), {body: globalCommands});
 
             } catch (error) {
                 console.error(error);
