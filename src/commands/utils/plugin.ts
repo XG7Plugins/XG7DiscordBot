@@ -1,4 +1,4 @@
-import {Command} from "../../types/Command";
+import {Command} from "../../types/discord/Command";
 import {ApplicationCommandOptionType, MessageFlags} from "discord.js";
 import {Plugin} from "../../types/internet/Plugin";
 import PluginComponent from "../../components/template/plugin";

@@ -1,5 +1,5 @@
 import { client } from "../..";
-import {Listener} from "../../types/Event";
+import {Listener} from "../../types/discord/Event";
 import {CommandInteractionOptionResolver} from "discord.js";
 
 export default new Listener({

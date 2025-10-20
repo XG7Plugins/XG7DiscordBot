@@ -1,4 +1,4 @@
-import {Listener} from "../../types/Event";
+import {Listener} from "../../types/discord/Event";
 import { client, config } from "../../index";
 import {Message, MessageFlags, TextChannel} from "discord.js";
 import DeleteMessageLogComponent from "../../components/template/delete_message";

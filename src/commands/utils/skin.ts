@@ -1,6 +1,7 @@
-import { Command } from "../../types/Command";
+import { Command } from "../../types/discord/Command";
 import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
 import SkinComponent from "../../components/template/skin";
+import {MinecraftUser} from "../../types/internet/MinecraftUser";
 
 export default new Command({
     data: {
@@ -35,7 +36,7 @@ export default new Command({
         }
 
         try {
-            let response: { name: string; id: string } | null = null;
+            let response: MinecraftUser | null = null;
 
             if (name) {
                 response = await getProfileByName(name);
@@ -77,23 +78,22 @@ function isValidMinecraftUUID(uuid: string): boolean {
     return /^[0-9a-f]{32}$/i.test(cleanUUID);
 }
 
-async function getProfileByUUID(uuid: string): Promise<{ name: string, id: string } | null> {
+async function getProfileByUUID(uuid: string): Promise<MinecraftUser | null> {
     try {
         const response = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`);
         if (!response.ok) return null;
         const data = await response.json();
-        // @ts-ignore
-        return { name: data.name, id: data.id };
+        return data as MinecraftUser;
     } catch {
         return null;
     }
 }
 
-async function getProfileByName(username: string): Promise<{ name: string, id: string } | null> {
+async function getProfileByName(username: string): Promise<MinecraftUser | null> {
     try {
         const response = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`);
         if (!response.ok) return null;
-        return await response.json() as { name: string, id: string };
+        return await response.json() as MinecraftUser;
     } catch {
         return null;
     }

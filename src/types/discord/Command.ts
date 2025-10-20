@@ -1,4 +1,4 @@
-import {BotClient} from "./BotClient";
+import {BotClient} from "../BotClient";
 import {
     ApplicationCommandData,
     CommandInteraction,

@@ -8,8 +8,9 @@ import {
     TextDisplayBuilder,
     ThumbnailBuilder
 } from "discord.js";
+import {MinecraftUser} from "../../types/internet/MinecraftUser";
 
-export default function SkinComponent(player: { name: string, id: string }) {
+export default function SkinComponent(player: MinecraftUser) {
     const uuidSection = new SectionBuilder()
         .addTextDisplayComponents(
             new TextDisplayBuilder().setContent("# Jogador: " + player.name),

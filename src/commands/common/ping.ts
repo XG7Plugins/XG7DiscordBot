@@ -1,4 +1,4 @@
-import {Command} from "../../types/Command";
+import {Command} from "../../types/discord/Command";
 import {MessageFlags, PermissionsBitField} from "discord.js";
 
 export default new Command({

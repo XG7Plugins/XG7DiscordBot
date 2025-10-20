@@ -1,4 +1,4 @@
-import {Listener} from "../../types/Event";
+import {Listener} from "../../types/discord/Event";
 import { config } from "../.."
 import {OmitPartialGroupDMChannel} from "discord.js";
 

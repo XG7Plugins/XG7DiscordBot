@@ -1,4 +1,4 @@
-import {Listener} from "../../types/Event";
+import {Listener} from "../../types/discord/Event";
 import {client} from "../../index";
 
 export default new Listener({

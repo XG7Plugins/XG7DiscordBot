@@ -10,11 +10,12 @@ import {
 } from "discord.js";
 import { config } from "..";
 import 'dotenv/config';
-import {Command} from "./Command";
+import {Command} from "./discord/Command";
 import fileS from "fs";
 import path from "path";
-import {Listener} from "./Event";
-import {ComponentHandler} from "./Components";
+import {Listener} from "./discord/Event";
+import {ComponentHandler} from "./discord/Components";
+import * as console from "node:console";
 
 export * from "colors";
 
@@ -67,10 +68,11 @@ export class BotClient extends Client {
             const rest = new REST().setToken(process.env.BOT_TOKEN ?? "");
 
             try {
-                console.log(`Started refreshing ${globalCommands.length + guildCommands.length} application (/) commands.`);
 
                 await rest.put(Routes.applicationGuildCommands(config.bot_id, config.main_guild), {body: guildCommands});
                 await rest.put(Routes.applicationCommands(config.bot_id), {body: globalCommands});
+
+                console.log(`Foram recarregados ${globalCommands.length + guildCommands.length} comandos (/).`.blue);
 
             } catch (error) {
                 console.error(error);
@@ -95,7 +97,7 @@ export class BotClient extends Client {
             })
         })
 
-        console.log("Eventos registrados com sucesso!")
+        console.log("Eventos registrados com sucesso!".blue)
     }
 
     private registerComponentsHandlers() {
@@ -111,6 +113,8 @@ export class BotClient extends Client {
                     console.log(err)
                 }
             })
+
+        console.log("Foram registrados " + this.componentHandlers.size + " manipuladores de componentes".blue)
     }
 
     getMainGuild() {
