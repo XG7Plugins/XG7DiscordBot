@@ -38,15 +38,29 @@ export default new Command({
 
         const pluginByName = !id;
 
-        fetch("https://api.xg7plugins.com/plugins/" + (pluginByName ? "name" : "id") + "/" + (pluginByName ? name : id)).then(res => res.json()).then(data => {
+        fetch("https://api.xg7plugins.com/plugins/" + (pluginByName ? "name" : "id") + "/" + (pluginByName ? name : id))
+            .then(async res => {
+                if (!res.ok) {
+                    return interaction.reply({
+                        content: `❌ Erro ao buscar plugin (${res.status})`,
+                        flags: [MessageFlags.Ephemeral],
+                    });
+                }
 
-            const plugin = data as Plugin;
-            interaction.reply({
-                components: [PluginComponent(plugin)],
-                flags: [MessageFlags.IsComponentsV2, MessageFlags.Ephemeral],
+                const data = await res.json();
+                const plugin = data as Plugin;
+
+                await interaction.reply({
+                    components: [PluginComponent(plugin)],
+                    flags: [MessageFlags.IsComponentsV2, MessageFlags.Ephemeral],
+                });
+            })
+            .catch(err => {
+                interaction.reply({
+                    content: `⚠️ Erro inesperado: ${err}`,
+                    flags: [MessageFlags.Ephemeral],
+                });
             });
-
-        })
     }
 
 })

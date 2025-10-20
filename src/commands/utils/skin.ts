@@ -1,5 +1,5 @@
-import {Command} from "../../types/Command";
-import {ApplicationCommandOptionType, MessageFlags} from "discord.js";
+import { Command } from "../../types/Command";
+import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
 import SkinComponent from "../../components/template/skin";
 
 export default new Command({
@@ -23,105 +23,68 @@ export default new Command({
     },
     isGlobal: true,
 
-    run({ interaction, options }) {
-
+    async run({ interaction, options }) {
         const name = options.getString("name");
         const uuidOption = options.getString("uuid");
 
-
         if (!uuidOption && !name) {
-            interaction.reply({
-                content: "Você precisa inserir um nome ou um UUID!",
+            return interaction.reply({
+                content: "❌ Você precisa inserir um nome **ou** um UUID!",
                 flags: [MessageFlags.Ephemeral],
             });
         }
 
-        if (name) {
-            getProfileByName(name)
-                .then(response => {
+        try {
+            let response: { name: string; id: string } | null = null;
 
-                    if (!response) {
-                        interaction.reply({
-                            content: "ERRO! Não foi possível buscar o UUID desse jogador. Talvez o jogador não existe!",
-                            flags: [MessageFlags.Ephemeral],
-                        });
-                        return
-                    }
-
-                    interaction.reply({
-                        components: [SkinComponent(response)],
-                        flags: [MessageFlags.IsComponentsV2, MessageFlags.Ephemeral],
-                    });
-
-                })
-                .catch(() => {
-                    interaction.reply({
-                        content: "ERRO! Não foi possível buscar o UUID desse jogador. Talvez o jogador não existe!",
+            if (name) {
+                response = await getProfileByName(name);
+            } else {
+                if (!isValidMinecraftUUID(uuidOption!)) {
+                    return interaction.reply({
+                        content: "❌ UUID inválido!",
                         flags: [MessageFlags.Ephemeral],
                     });
-                })
-            return
-        }
-
-        if (!isValidMinecraftUUID(uuidOption!)) {
-            interaction.reply({
-                content: "ERRO! UUID inválido!",
-                flags: [MessageFlags.Ephemeral],
-            });
-            return;
-        }
-
-        getProfileByUUID(uuidOption!.replace(/-/g, ''))
-            .then(response => {
-
-                if (!response) {
-                    interaction.reply({
-                        content: "ERRO! Não foi possível buscar o UUID desse jogador. Talvez o jogador não existe!",
-                        flags: [MessageFlags.Ephemeral],
-                    });
-                    return
                 }
+                response = await getProfileByUUID(uuidOption!.replace(/-/g, ""));
+            }
 
-                interaction.reply({
-                    components: [SkinComponent(response)],
-                    flags: [MessageFlags.IsComponentsV2, MessageFlags.Ephemeral],
-                });
-
-            })
-            .catch(() => {
-                interaction.reply({
-                    content: "ERRO! Não foi possível buscar o UUID desse jogador. Talvez o jogador não existe!",
+            if (!response) {
+                return interaction.reply({
+                    content: "⚠️ Não foi possível buscar o jogador. Verifique se ele existe!",
                     flags: [MessageFlags.Ephemeral],
                 });
-            })
-    }
+            }
 
-
-
-})
+            await interaction.reply({
+                components: [SkinComponent(response)],
+                flags: [MessageFlags.IsComponentsV2, MessageFlags.Ephemeral],
+            });
+        } catch (err) {
+            console.error("Erro ao executar comando /skin:", err);
+            if (!interaction.replied && !interaction.deferred) {
+                await interaction.reply({
+                    content: "❌ Ocorreu um erro inesperado ao buscar o jogador.",
+                    flags: [MessageFlags.Ephemeral],
+                });
+            }
+        }
+    },
+});
 
 function isValidMinecraftUUID(uuid: string): boolean {
     const cleanUUID = uuid.replace(/-/g, '');
-
-    const uuidRegex = /^[0-9a-f]{32}$/i;
-
-    return uuidRegex.test(cleanUUID);
+    return /^[0-9a-f]{32}$/i.test(cleanUUID);
 }
 
 async function getProfileByUUID(uuid: string): Promise<{ name: string, id: string } | null> {
     try {
         const response = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`);
-
-        if (!response.ok) {
-            throw new Error(`Erro ao buscar UUID: ${response.statusText}`);
-        }
-
+        if (!response.ok) return null;
         const data = await response.json();
-
         // @ts-ignore
         return { name: data.name, id: data.id };
-    } catch (error) {
-        console.error("Erro ao buscar UUID:", error);
+    } catch {
         return null;
     }
 }
@@ -129,14 +92,9 @@ async function getProfileByUUID(uuid: string): Promise<{ name: string, id: strin
 async function getProfileByName(username: string): Promise<{ name: string, id: string } | null> {
     try {
         const response = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`);
-
-        if (!response.ok) {
-            throw new Error(`Erro ao buscar UUID: ${response.statusText}`);
-        }
-
+        if (!response.ok) return null;
         return await response.json() as { name: string, id: string };
-    } catch (error) {
-        console.error("Erro ao buscar UUID:", error);
+    } catch {
         return null;
     }
 }
