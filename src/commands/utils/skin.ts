@@ -25,14 +25,14 @@ export default new Command({
     isGlobal: true,
 
     async run({ interaction, options }) {
+
+        await interaction.deferReply({flags: [MessageFlags.Ephemeral]});
+
         const name = options.getString("name");
         const uuidOption = options.getString("uuid");
 
         if (!uuidOption && !name) {
-            return interaction.reply({
-                content: "❌ Você precisa inserir um nome **ou** um UUID!",
-                flags: [MessageFlags.Ephemeral],
-            });
+            return await interaction.editReply({content: "❌ Você precisa inserir um nome **ou** um UUID!"});
         }
 
         try {
@@ -42,7 +42,7 @@ export default new Command({
                 response = await getProfileByName(name);
             } else {
                 if (!isValidMinecraftUUID(uuidOption!)) {
-                    return interaction.reply({
+                    return await interaction.reply({
                         content: "❌ UUID inválido!",
                         flags: [MessageFlags.Ephemeral],
                     });
@@ -51,23 +51,17 @@ export default new Command({
             }
 
             if (!response) {
-                return interaction.reply({
-                    content: "⚠️ Não foi possível buscar o jogador. Verifique se ele existe!",
-                    flags: [MessageFlags.Ephemeral],
-                });
+                return await interaction.editReply({content: "⚠️ Não foi possível buscar o jogador. Verifique se ele existe!"});
             }
 
-            await interaction.reply({
+            await interaction.followUp({
                 components: [SkinComponent(response)],
                 flags: [MessageFlags.IsComponentsV2, MessageFlags.Ephemeral],
             });
         } catch (err) {
             console.error("Erro ao executar comando /skin:", err);
             if (!interaction.replied && !interaction.deferred) {
-                await interaction.reply({
-                    content: "❌ Ocorreu um erro inesperado ao buscar o jogador.",
-                    flags: [MessageFlags.Ephemeral],
-                });
+                await interaction.editReply({content: "❌ Ocorreu um erro inesperado ao buscar o jogador."});
             }
         }
     },

@@ -6,9 +6,43 @@
   "bot_id": "1167899920334868540",
   "channels": {
     "request_ticket_channel": "1347545309605265448",
-    "log_channel": "1347547219368345664"
+    "log_channel": "1347547219368345664",
+    "counting_channel": "1430398136668651561"
   },
-  "roles": [
+  "changing_status": [
+    {
+      "status": "idle",
+      "type": 4,
+      "name": "😴 Dormindo"
+    },
+    {
+      "status": "online",
+      "type": 0,
+      "name": "Sua mãe pela janela"
+    },
+    {
+      "status": "dnd",
+      "type": 2,
+      "name": "DaviXG7"
+    },
+    {
+      "status": "online",
+      "type": 0,
+      "name": "Minecraft"
+    },
+    {
+      "status": "online",
+      "type": 0,
+      "name": "GTA VI"
+    }
 
-  ]
+  ],
+  "random_reactions": {
+    "7": "<:7_primeiro:1247146369827733514>",
+    "tails": "<:tails_fofo:1381971890930716692>",
+    "paia": "<:peepoclose:1418703059579703326>",
+    "java": "☕",
+    "furry": "<a:SerioIsso:1418958230809350144>",
+    "gay": "🏳️‍🌈"
+  }
 }

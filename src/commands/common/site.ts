@@ -9,9 +9,9 @@ export default new Command({
     },
     isGlobal: true,
 
-    run({ interaction }) {
+    async run({ interaction }) {
 
-        interaction.reply({
+        await interaction.reply({
             components: [SiteComponent()],
             flags: [MessageFlags.IsComponentsV2, MessageFlags.Ephemeral ],
         });

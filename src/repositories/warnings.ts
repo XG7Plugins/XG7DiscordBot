@@ -46,11 +46,12 @@ export default class WarningsRepository implements Repository<number, WarningMod
             )
     }
 
-    selectAllFrom(user_id: string): Promise<WarningModel[]> {
-        return database.query(
+    async selectAllFrom(user_id: string): Promise<WarningModel[]> {
+        const [rows] = await database.query(
             `SELECT * FROM ${this.table} WHERE user_id = ?`,
             [user_id]
-        )
+        );
+        return rows as WarningModel[];
     }
 
 }

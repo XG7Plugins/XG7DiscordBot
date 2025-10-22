@@ -1,24 +1,17 @@
 import {Command} from "../../types/discord/Command";
-import {MessageFlags, PermissionsBitField} from "discord.js";
+import {MessageFlags} from "discord-api-types/v10";
 
 export default new Command({
     data: {
         name: "ping",
-        description: "Teste de ping!",
+        description: "Teste de ping!"
     },
-    run: ({ interaction }) => {
+    isGlobal: true,
+    run: async ({ interaction }) => {
+        await interaction.deferReply({flags: [MessageFlags.Ephemeral]});
 
-        if (!interaction.memberPermissions?.has(PermissionsBitField.Flags.Administrator)) {
-            return interaction.reply({
-                content: "Você não tem permissão para usar esse comando!",
-                flags: [MessageFlags.Ephemeral],
-            });
-        }
-
-        interaction.reply({
+        await interaction.editReply({
             content: "Pong!"
         })
-
-
     }
 });

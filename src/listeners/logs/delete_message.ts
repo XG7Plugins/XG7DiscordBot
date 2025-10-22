@@ -11,6 +11,8 @@ export default new Listener({
 
         if (!channel) return;
 
+        if (event.author?.id === config.bot_id) return;
+
         channel.send({
             components: [DeleteMessageLogComponent(event.author, event as Message, event.channel as TextChannel)],
             flags: [MessageFlags.IsComponentsV2],

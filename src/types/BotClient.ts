@@ -8,7 +8,7 @@ import {
     Partials, REST,
     Routes
 } from "discord.js";
-import { config } from "..";
+import {client, config} from "..";
 import 'dotenv/config';
 import {Command} from "./discord/Command";
 import fileS from "fs";
@@ -16,6 +16,7 @@ import path from "path";
 import {Listener} from "./discord/Event";
 import {ComponentHandler} from "./discord/Components";
 import * as console from "node:console";
+import {clearInterval} from "node:timers";
 
 export * from "colors";
 
@@ -23,6 +24,10 @@ export class BotClient extends Client {
 
     public commands: Collection<string, Command> = new Collection();
     public componentHandlers: Collection<string, ComponentHandler<any>> = new Collection();
+
+    public maintenance: boolean = false;
+
+    statusTask: NodeJS.Timeout | null = null;
 
     constructor() {
         super({
@@ -38,7 +43,9 @@ export class BotClient extends Client {
         this.registerComponentsHandlers();
         this.registerEvents();
         this.registerCommands();
+        this.once("clientReady", () => this.initStatusChange())
         this.login(process.env.BOT_TOKEN).then(() => console.log("Bot logado com sucesso!".rainbow));
+
     }
 
     private registerCommands() {
@@ -117,8 +124,45 @@ export class BotClient extends Client {
         console.log("Foram registrados " + this.componentHandlers.size + " manipuladores de componentes".blue)
     }
 
+    initStatusChange() {
+        if (this.maintenance) {
+            if (this.statusTask) clearInterval(this.statusTask);
+            client.user?.setPresence({
+                status: "idle",
+                activities: [{ name: "🛠️ EM MANUTENÇÃO", type: 4 }]
+            })
+            return
+        }
+
+        let index = 0;
+
+        this.statusTask = setInterval(() => {
+
+            if (index >= config.changing_status.length) {
+                index = 0;
+            }
+
+            let status = config.changing_status[index]
+
+            client.user?.setPresence({
+                status: status.status as "online" | "idle" | "dnd" | "invisible",
+                activities: [{ name: status.name, type: status.type }]
+            })
+
+            index++;
+
+        }, 60 * 1000)
+    }
+
     getMainGuild() {
         return this.guilds.cache.get(config.main_guild);
+    }
+
+    onToggleMaintenance() {
+
+        this.initStatusChange()
+
+        //TODO
     }
 
 
