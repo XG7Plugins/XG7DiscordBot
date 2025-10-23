@@ -16,7 +16,7 @@ export default function WarningComponent(warningModel: WarningModel) {
                     new TextDisplayBuilder().setContent("# Você recebeu um aviso de um administrador!"),
                     new TextDisplayBuilder().setContent("Siga corretamente as regras para não ser punido mais uma vez!")
                 )
-                .setThumbnailAccessory(new ThumbnailBuilder().setURL("https://cdn-icons-png.flaticon.com/128/3020/3020000.png").setDescription("Warn"))
+                .setThumbnailAccessory(new ThumbnailBuilder().setURL("https://cdn-icons-png.flaticon.com/128/5955/5955689.png").setDescription("Warn"))
         )
         .addSeparatorComponents(new SeparatorBuilder())
         .addTextDisplayComponents(new TextDisplayBuilder().setContent("Motivo: " + warningModel.reason))

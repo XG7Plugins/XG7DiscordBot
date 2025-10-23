@@ -1,63 +1,60 @@
 import {Command} from "../../types/discord/Command";
-import {ApplicationCommandOptionType, MessageFlags, User} from "discord.js";
+import {MessageFlags, PermissionFlagsBits, SlashCommandBuilder, User} from "discord.js";
 import {client, database} from "../../index";
 import WarningsRepository from "../../repositories/warnings";
 import * as console from "node:console";
 import WarningComponent from "../../components/template/warning_display";
+import {InteractionContextType} from "discord-api-types/v10";
 
 export default new Command({
-    data: {
-        name: "warn",
-        description: "Manipula uma infração de alguem",
-        defaultMemberPermissions: ["Administrator"],
-        dmPermission: false,
-        options: [
-            {
-                name: "add",
-                description: "Adiciona um aviso a um usuário",
-                type: ApplicationCommandOptionType.Subcommand,
-                options: [
-                    {
-                        name: "user",
-                        description: "Usuário a ser avisado",
-                        type: ApplicationCommandOptionType.User,
-                        required: true
-                    },
-                    {
-                        name: "reason",
-                        description: "Motivo do aviso",
-                        type: ApplicationCommandOptionType.String,
-                        required: true
-                    }
-                ]
-            },
-            {
-                name: "perdoar",
-                description: "Remove um aviso de um usuário",
-                type: ApplicationCommandOptionType.Subcommand,
-                options: [
-                    {
-                        name: "id",
-                        description: "ID do aviso a remover",
-                        type: ApplicationCommandOptionType.Integer,
-                        required: true
-                    }
-                ]
-            },
-            {
-                name: "ver",
-                description: "Ve os avisos de um usuário",
-                type: ApplicationCommandOptionType.Subcommand,
-                options: [
-                    {
-                        name: "user",
-                        description: "Usuário a ser visto",
-                        type: ApplicationCommandOptionType.User,
-                        required: true
-                    },
-                ]
-            }
-        ]
+    build() {
+        return new SlashCommandBuilder()
+            .setName("warn")
+            .setDescription("Manipula uma infração de alguem")
+            .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
+            .setContexts(InteractionContextType.Guild)
+
+            .addSubcommand(sub =>
+                sub
+                    .setName("add")
+                    .setDescription("Adiciona um aviso a um usuário")
+                    .addUserOption(option =>
+                        option
+                            .setName("user")
+                            .setDescription("Usuário a ser avisado")
+                            .setRequired(true)
+                    )
+                    .addStringOption(option =>
+                        option
+                            .setName("reason")
+                            .setDescription("Motivo do aviso")
+                            .setRequired(true)
+                    )
+            )
+
+            .addSubcommand(sub =>
+                sub
+                    .setName("perdoar")
+                    .setDescription("Remove um aviso de um usuário")
+                    .addIntegerOption(option =>
+                        option
+                            .setName("id")
+                            .setDescription("ID do aviso a remover")
+                            .setRequired(true)
+                    )
+            )
+
+            .addSubcommand(sub =>
+                sub
+                    .setName("ver")
+                    .setDescription("Ve os avisos de um usuário")
+                    .addUserOption(option =>
+                        option
+                            .setName("user")
+                            .setDescription("Usuário a ser visto")
+                            .setRequired(true)
+                    )
+            );
     },
     run: async ({ interaction, options }) => {
 

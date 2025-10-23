@@ -21,8 +21,8 @@ export default class WarningsRepository implements Repository<number, WarningMod
     }
     insert(value: WarningModel): Promise<void> {
         return database.query(
-                `INSERT INTO ${this.table} (id, user_id, reason) VALUES (?, ?, ?)`,
-                [value.id, value.user_id, value.reason]
+                `INSERT INTO ${this.table} (user_id, reason) VALUES (?, ?, ?)`,
+                [value.user_id, value.reason]
         )
     }
     select(id: number): Promise<WarningModel> {

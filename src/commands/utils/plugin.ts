@@ -1,27 +1,27 @@
 import {Command} from "../../types/discord/Command";
-import {ApplicationCommandOptionType, MessageFlags} from "discord.js";
+import {MessageFlags, SlashCommandBuilder} from "discord.js";
 import {Plugin} from "../../types/internet/Plugin";
 import PluginComponent from "../../components/template/plugin";
 
 export default new Command({
-    data: {
-        name: "ver-plugin",
-        description: "Veja as descrições de um plugin",
-        options: [
-            {
-                name: "name",
-                description: "Nome do plugin",
-                type: ApplicationCommandOptionType.String,
-                required: false,
-            },
-            {
-                name: "id",
-                description: "ID do plugin",
-                type: ApplicationCommandOptionType.Integer,
-                required: false,
-            }
-        ]
+    build() {
+        return new SlashCommandBuilder()
+            .setName("ver-plugin")
+            .setDescription("Veja as descrições de um plugin")
+            .addStringOption(option =>
+                option
+                    .setName("name")
+                    .setDescription("Nome do plugin")
+                    .setRequired(false)
+            )
+            .addIntegerOption(option =>
+                option
+                    .setName("id")
+                    .setDescription("ID do plugin")
+                    .setRequired(false)
+            );
     },
+
     isGlobal: true,
 
     run: async({ interaction, options }) => {

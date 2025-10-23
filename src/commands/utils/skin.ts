@@ -1,26 +1,25 @@
 import { Command } from "../../types/discord/Command";
-import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
+import {MessageFlags, SlashCommandBuilder} from "discord.js";
 import SkinComponent from "../../components/template/skin";
 import {MinecraftUser} from "../../types/internet/MinecraftUser";
 
 export default new Command({
-    data: {
-        name: "skin",
-        description: "Veja a skin de um player",
-        options: [
-            {
-                name: "name",
-                description: "Nome do Player",
-                type: ApplicationCommandOptionType.String,
-                required: false,
-            },
-            {
-                name: "uuid",
-                description: "UUID do player",
-                type: ApplicationCommandOptionType.String,
-                required: false,
-            }
-        ]
+    build() {
+        return new SlashCommandBuilder()
+            .setName("skin")
+            .setDescription("Veja a skin de um player")
+            .addStringOption(option =>
+                option
+                    .setName("name")
+                    .setDescription("Nome do Player")
+                    .setRequired(false)
+            )
+            .addStringOption(option =>
+                option
+                    .setName("uuid")
+                    .setDescription("UUID do player")
+                    .setRequired(false)
+            );
     },
     isGlobal: true,
 

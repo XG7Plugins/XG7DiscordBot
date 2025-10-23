@@ -1,11 +1,12 @@
 import {Command} from "../../types/discord/Command";
-import { MessageFlags } from "discord.js";
+import {MessageFlags, SlashCommandBuilder} from "discord.js";
 import SiteComponent from "../../components/template/site";
 
 export default new Command({
-    data: {
-        name: "site",
-        description: "Site do XG7Plugins"
+    build() {
+        return new SlashCommandBuilder()
+            .setName("site")
+            .setDescription("Site do XG7Plugins");
     },
     isGlobal: true,
 

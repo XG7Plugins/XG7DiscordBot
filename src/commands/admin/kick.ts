@@ -1,29 +1,29 @@
 import {Command} from "../../types/discord/Command";
-import {ApplicationCommandOptionType, MessageFlags} from "discord.js";
+import {MessageFlags, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import {client, database} from "../../index";
 import console from "node:console";
 import KickComponent from "../../components/template/kick_display";
+import {InteractionContextType} from "discord-api-types/v10";
 
 export default new Command({
-    data: {
-        name: "kick",
-        description: "Expulsa membros",
-        defaultMemberPermissions: ["Administrator"],
-        dmPermission: false,
-        options: [
-            {
-                name: "user",
-                description: "Usuário a ser expulso",
-                type: ApplicationCommandOptionType.User,
-                required: true
-            },
-            {
-                name: "reason",
-                description: "Razão da expulsão",
-                type: ApplicationCommandOptionType.String,
-                required: false
-            }
-        ]
+    build() {
+        return new SlashCommandBuilder()
+            .setName("kick")
+            .setDescription("Expulsa membros")
+            .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
+            .setContexts(InteractionContextType.Guild)
+            .addUserOption(option =>
+                option
+                    .setName("user")
+                    .setDescription("Usuário a ser expulso")
+                    .setRequired(true)
+            )
+            .addStringOption(option =>
+                option
+                    .setName("reason")
+                    .setDescription("Razão da expulsão")
+                    .setRequired(false)
+            );
     },
     run: async ({ interaction, options }) => {
 

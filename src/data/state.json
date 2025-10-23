@@ -1,0 +1,13 @@
+{
+  "maintenance": false,
+
+  "counting_game": {
+    "current_number": 0,
+    "top_number": 0
+  },
+
+  "opened_tickets": [
+
+  ]
+
+}

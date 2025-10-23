@@ -1,35 +1,35 @@
 import {Command} from "../../types/discord/Command";
-import {ApplicationCommandOptionType, MessageFlags} from "discord.js";
+import {MessageFlags, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import {client, database} from "../../index";
 import console from "node:console";
 import MuteComponent from "../../components/template/mute_display";
+import {InteractionContextType} from "discord-api-types/v10";
 
 export default new Command({
-    data: {
-        name: "timeout",
-        description: "Silencia membros",
-        defaultMemberPermissions: ["Administrator"],
-        dmPermission: false,
-        options: [
-            {
-                name: "user",
-                description: "Usuário a ser silenciado",
-                type: ApplicationCommandOptionType.User,
-                required: true
-            },
-            {
-                name: "tempo",
-                description: "Tempo do silenciamento",
-                type: ApplicationCommandOptionType.Integer,
-                required: true
-            },
-            {
-                name: "reason",
-                description: "Razão do silenciamento",
-                type: ApplicationCommandOptionType.String,
-                required: false
-            }
-        ]
+    build() {
+        return new SlashCommandBuilder()
+            .setName("timeout")
+            .setDescription("Silencia membros")
+            .setDefaultMemberPermissions(PermissionFlagsBits.MuteMembers)
+            .setContexts(InteractionContextType.Guild)
+            .addUserOption(option =>
+                option
+                    .setName("user")
+                    .setDescription("Usuário a ser silenciado")
+                    .setRequired(true)
+            )
+            .addIntegerOption(option =>
+                option
+                    .setName("tempo")
+                    .setDescription("Tempo do silenciamento")
+                    .setRequired(true)
+            )
+            .addStringOption(option =>
+                option
+                    .setName("reason")
+                    .setDescription("Razão do silenciamento")
+                    .setRequired(false)
+            );
     },
     run: async ({ interaction, options }) => {
 

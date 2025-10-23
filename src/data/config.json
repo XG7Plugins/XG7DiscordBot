@@ -5,7 +5,9 @@
   "main_guild": "1206355714893815808",
   "bot_id": "1167899920334868540",
   "channels": {
-    "request_ticket_channel": "1347545309605265448",
+    "request_ticket_channel": "1430762657249628271",
+    "tickets_category": "1347547392299237469",
+
     "log_channel": "1347547219368345664",
     "counting_channel": "1430398136668651561"
   },
@@ -18,11 +20,11 @@
     {
       "status": "online",
       "type": 0,
-      "name": "Sua mãe pela janela"
+      "name": "sua mãe pela janela"
     },
     {
       "status": "dnd",
-      "type": 2,
+      "type": 3,
       "name": "DaviXG7"
     },
     {
@@ -34,8 +36,17 @@
       "status": "online",
       "type": 0,
       "name": "GTA VI"
+    },
+    {
+      "status": "online",
+      "type": 0,
+      "name": "o Aceitou na cama (lá ele)"
+    },
+    {
+      "status": "online",
+      "type": 0,
+      "name": "com o Robin pato (um sonho)"
     }
-
   ],
   "random_reactions": {
     "7": "<:7_primeiro:1247146369827733514>",
@@ -43,6 +54,12 @@
     "paia": "<:peepoclose:1418703059579703326>",
     "java": "☕",
     "furry": "<a:SerioIsso:1418958230809350144>",
-    "gay": "🏳️‍🌈"
+    "gay": "🏳️‍🌈",
+    " L": "🇱",
+    " L ": "🇱",
+    "triste": "<a:Pensive_Weird:1382080855798710376>",
+    "js": "<:javascript:1252027839344283658>",
+    "ts": "<:javascript:1252027839344283658>",
+    "python": "🐍"
   }
 }

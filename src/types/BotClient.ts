@@ -1,14 +1,13 @@
 import {
-    ApplicationCommandDataResolvable,
     BitFieldResolvable,
     Client, ClientEvents,
     Collection,
     GatewayIntentsString,
     IntentsBitField,
     Partials, REST,
-    Routes
+    Routes, SlashCommandBuilder
 } from "discord.js";
-import {client, config} from "..";
+import {client, config, state} from "..";
 import 'dotenv/config';
 import {Command} from "./discord/Command";
 import fileS from "fs";
@@ -17,6 +16,7 @@ import {Listener} from "./discord/Event";
 import {ComponentHandler} from "./discord/Components";
 import * as console from "node:console";
 import {clearInterval} from "node:timers";
+import {SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder} from "@discordjs/builders";
 
 export * from "colors";
 
@@ -24,8 +24,6 @@ export class BotClient extends Client {
 
     public commands: Collection<string, Command> = new Collection();
     public componentHandlers: Collection<string, ComponentHandler<any>> = new Collection();
-
-    public maintenance: boolean = false;
 
     statusTask: NodeJS.Timeout | null = null;
 
@@ -50,8 +48,8 @@ export class BotClient extends Client {
 
     private registerCommands() {
 
-        const guildCommands: Array<ApplicationCommandDataResolvable> = [];
-        const globalCommands: Array<ApplicationCommandDataResolvable> = [];
+        const guildCommands: Array<SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder> = [];
+        const globalCommands: Array<SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder> = [];
 
         fileS.readdirSync(path.join(__dirname, "..",  "commands")).forEach((cmdPath) => {
 
@@ -61,13 +59,10 @@ export class BotClient extends Client {
 
                     const command: Command = (await import (`../commands/${cmdPath}/${cmdFile}`))?.default
 
-                    this.commands.set(command.declaration.data.name, command);
+                    const builtCommand = command.declaration.build();
 
-                    if (command.declaration.componentHandlers) {
-                        this.componentHandlers.set(command.declaration.componentHandlers[0].id, command.declaration.componentHandlers[0]);
-                    }
-
-                    (command.declaration.isGlobal ? globalCommands : guildCommands).push(command.declaration.data);
+                    this.commands.set(builtCommand.name, command);
+                    (command.declaration.isGlobal ? globalCommands : guildCommands).push(builtCommand);
                 })
         })
 
@@ -112,10 +107,11 @@ export class BotClient extends Client {
             .filter(file => file.endsWith(".js") || file.endsWith(".ts"))
             .forEach(async (handlersFile) => {
 
-                const handlers: ComponentHandler<any> = (await import (`../components/handlers/${handlersFile}`))?.default;
+                const HandlerClass = (await import (`../components/handlers/${handlersFile}`))?.default;
+                const handler: ComponentHandler<any> = new HandlerClass();
 
                 try {
-                    this.componentHandlers.set(handlers.id, handlers);
+                    this.componentHandlers.set(handler.id, handler);
                 } catch (err) {
                     console.log(err)
                 }
@@ -125,7 +121,7 @@ export class BotClient extends Client {
     }
 
     initStatusChange() {
-        if (this.maintenance) {
+        if (state.maintenance) {
             if (this.statusTask) clearInterval(this.statusTask);
             client.user?.setPresence({
                 status: "idle",

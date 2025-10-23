@@ -1,35 +1,35 @@
 import {Command} from "../../types/discord/Command";
-import {ApplicationCommandOptionType, MessageFlags} from "discord.js";
+import {MessageFlags, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import {client, database} from "../../index";
 import console from "node:console";
 import BanComponent from "../../components/template/ban_display";
+import {InteractionContextType} from "discord-api-types/v10";
 
 export default new Command({
-    data: {
-        name: "ban",
-        description: "Bane membros",
-        defaultMemberPermissions: ["Administrator"],
-        dmPermission: false,
-        options: [
-            {
-                name: "user",
-                description: "Usuário a ser banido",
-                type: ApplicationCommandOptionType.User,
-                required: true
-            },
-            {
-                name: "tempo",
-                description: "Tempo do banimento (em dias)",
-                type: ApplicationCommandOptionType.Integer,
-                required: false
-            },
-            {
-                name: "reason",
-                description: "Razão da expulsão",
-                type: ApplicationCommandOptionType.String,
-                required: false
-            }
-        ]
+    build() {
+        return new SlashCommandBuilder()
+            .setName("ban")
+            .setDescription("Bane membros")
+            .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
+            .setContexts(InteractionContextType.Guild)
+            .addUserOption(option =>
+                option
+                    .setName("user")
+                    .setDescription("Usuário a ser banido")
+                    .setRequired(true)
+            )
+            .addIntegerOption(option =>
+                option
+                    .setName("tempo")
+                    .setDescription("Tempo do banimento (em dias)")
+                    .setRequired(false)
+            )
+            .addStringOption(option =>
+                option
+                    .setName("reason")
+                    .setDescription("Razão da expulsão")
+                    .setRequired(false)
+            );
     },
     run: async ({ interaction, options }) => {
 

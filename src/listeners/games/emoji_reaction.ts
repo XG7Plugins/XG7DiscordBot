@@ -7,7 +7,7 @@ export default new Listener({
     async handle(event): Promise<any> {
 
         for (const [key, emoji] of Object.entries(config.random_reactions)) {
-            if (event.content.toLowerCase().includes(key.toLowerCase())) {
+            if (event.cleanContent.toLowerCase().includes(key.toLowerCase())) {
                 try {
                     await event.react(emoji as EmojiIdentifierResolvable);
                 } catch (err) {

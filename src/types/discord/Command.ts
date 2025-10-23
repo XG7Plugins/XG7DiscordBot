@@ -1,15 +1,13 @@
 import {BotClient} from "../BotClient";
 import {
-    ApplicationCommandData,
     CommandInteraction,
-    CommandInteractionOptionResolver
+    CommandInteractionOptionResolver, SlashCommandBuilder
 } from "discord.js";
-import {ComponentHandler} from "./Components";
+import {SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder} from "@discordjs/builders";
 
 interface CommandDeclaration {
-    data: ApplicationCommandData;
+    build(): SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder;
     isGlobal?: boolean;
-    componentHandlers?: Array<ComponentHandler<any>>
     run(props: CommandProps): any;
 }
 
