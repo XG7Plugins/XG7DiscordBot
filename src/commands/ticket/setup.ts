@@ -1,7 +1,7 @@
 import {Command} from "../../types/discord/Command";
 import {MessageFlags, PermissionFlagsBits, SlashCommandBuilder, TextChannel} from "discord.js";
 import {client, config} from "../../index";
-import {TicketComponent} from "../../components/template/ticket";
+import {SetupTicketComponent} from "../../components/template/ticket";
 
 export default new Command({
     build() {
@@ -21,7 +21,7 @@ export default new Command({
         const channel = client.getMainGuild()?.channels.cache.get(config.channels.request_ticket_channel) as TextChannel;
 
         await channel.send({
-            components: TicketComponent(),
+            components: SetupTicketComponent(),
             flags: MessageFlags.IsComponentsV2,
         })
 

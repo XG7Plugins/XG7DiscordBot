@@ -6,8 +6,9 @@ import {
     TextDisplayBuilder,
     ThumbnailBuilder
 } from "discord.js";
+import {Ticket} from "../../types/database/models/Ticket";
 
-export function TicketComponent() {
+export function SetupTicketComponent() {
 
     return [
         new ContainerBuilder()
@@ -59,5 +60,11 @@ export function TicketComponent() {
                     )
             )
     ]
+
+}
+
+function TicketComponent(ticket: Ticket) {
+
+    return new ContainerBuilder()
 
 }

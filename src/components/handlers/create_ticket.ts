@@ -21,7 +21,7 @@ export default class CreateTicketHandler implements SelectMenuHandler {
 
             }
 
-            await interaction.editReply({content: `Seu ticket foi criado: <#${ticket?.channel_id}>`})
+            await interaction.editReply({content: `Seu ticket foi criado: <#${ticket?.id}>`})
 
         })
     }

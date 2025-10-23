@@ -1,7 +1,6 @@
 export type Ticket = {
-    id: number | undefined;
+    id: string;
     owner_id: string;
-    channel_id: string;
     added_members: string[] | [];
     closed: boolean | undefined;
     type: TicketType;

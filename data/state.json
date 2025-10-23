@@ -1,8 +1,8 @@
 {
   "counting_game": {
-    "current_number": 30,
-    "top_number": 29
+    "current_number": 52,
+    "top_number": 51
   },
   "opened_tickets": [],
-  "maintenance": true
+  "maintenance": false
 }

@@ -3,14 +3,13 @@ import {Ticket} from "../types/database/models/Ticket";
 import {client, config, database} from "../index";
 import console from "node:console";
 
-export default class TicketsRepository implements Repository<number, Ticket> {
+export default class TicketsRepository implements Repository<string, Ticket> {
     table = "tickets";
     createTable(): Promise<void> {
         return database.query(
             `CREATE TABLE IF NOT EXISTS ${this.table} (
-            id INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+            id VARCHAR(255) NOT NULL UNIQUE,
             owner_id VARCHAR(255) NOT NULL UNIQUE,
-            channel_id VARCHAR(255) NOT NULL,
             category ENUM('bug', 'suggestion', 'report', 'other') NOT NULL,
             added_members MEDIUMTEXT NOT NULL,
             closed BOOLEAN NOT NULL DEFAULT FALSE,
@@ -24,11 +23,11 @@ export default class TicketsRepository implements Repository<number, Ticket> {
     }
     insert(value: Ticket): Promise<void> {
         return database.query(
-            `INSERT INTO ${this.table} (owner_id, channel_id, category, added_members) VALUES (?, ?, ?, ?)`,
-            [value.owner_id, value.channel_id, value.type, '[]']
+            `INSERT INTO ${this.table} (owner_id, category, added_members) VALUES (?, ?, ?, ?)`,
+            [value.owner_id, value.type, '[]']
         )
     }
-    select(id: number): Promise<Ticket> {
+    select(id: string): Promise<Ticket> {
         return database.query(
             `SELECT * FROM ${this.table} WHERE id = ?`,
             [id]
@@ -42,7 +41,7 @@ export default class TicketsRepository implements Repository<number, Ticket> {
             [value.added_members, value.closed, value.id]
         )
     }
-    delete(id: number): Promise<void> {
+    delete(id: string): Promise<void> {
         return database.query(
             `DELETE FROM ${this.table} WHERE id = ?`,
             [id]
@@ -97,8 +96,8 @@ export async function createTicket(owner_name: string, owner_id: string, type: s
         console.log("CHANNEL ID" + channel.id);
 
         const ticket = {
+            id: channel.id,
             owner_id: owner_id,
-            channel_id: channel.id,
             type: type
         };
 
