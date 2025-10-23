@@ -8,5 +8,11 @@ export type Ticket = {
     createdAt: Date | undefined;
 }
 
-export type TicketType = "bug" | "suggestion" | "report" | "other";
+export type TicketBackup = {
+    id: string;
+    owner: string;
+
+}
+
+export type TicketType = "plugin" | "bug" | "sugestão" | "denúncia" | "outro";
 

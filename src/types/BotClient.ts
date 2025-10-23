@@ -116,8 +116,8 @@ export class BotClient extends Client {
                     console.log(err)
                 }
             })
-
         console.log("Foram registrados " + this.componentHandlers.size + " manipuladores de componentes".blue)
+
     }
 
     initStatusChange() {

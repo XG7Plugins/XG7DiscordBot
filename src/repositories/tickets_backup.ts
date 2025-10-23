@@ -5,7 +5,7 @@ import console from "node:console";
 import {TicketComponent} from "../components/template/ticket";
 import {GuildMember, MessageFlags} from "discord.js";
 
-export default class TicketsRepository implements Repository<string, Ticket> {
+export default class TicketsBackupRepository implements Repository<string, Ticket> {
     table = "tickets";
     createTable(): Promise<void> {
         return database.query(
