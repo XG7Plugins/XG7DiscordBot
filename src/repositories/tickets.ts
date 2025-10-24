@@ -29,16 +29,17 @@ export default class TicketsRepository implements Repository<string, Ticket> {
             [value.id, value.owner_id, value.type, '[]']
         )
     }
-    select(id: string): Promise<Ticket> {
-        return database.query(
+    async select(id: string): Promise<Ticket | null> {
+        const results = await database.query(
             `SELECT * FROM ${this.table} WHERE id = ?`,
             [id]
-
-        )
+        );
+        const ticket = results[0]?.[0];
+        return ticket as Ticket;
     }
     update(value: Ticket): Promise<Ticket> {
         return database.query(
-            `UPDATE ${this.table} (added_members, closed) 
+            `UPDATE ${this.table}
             SET added_members = ?, closed = ? WHERE id = ?`,
             [value.added_members, value.closed, value.id]
         )

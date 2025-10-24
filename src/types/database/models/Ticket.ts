@@ -1,7 +1,7 @@
 export type Ticket = {
     id: string;
     owner_id: string;
-    added_members: string[] | [];
+    added_members: string;
     closed: boolean | undefined;
     type: TicketType;
 
@@ -11,7 +11,7 @@ export type Ticket = {
 export type TicketBackup = {
     id: string;
     owner: string;
-
+    log: string;
 }
 
 export type TicketType = "plugin" | "bug" | "sugestão" | "denúncia" | "outro";

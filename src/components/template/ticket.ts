@@ -92,17 +92,39 @@ export function TicketComponent(ticket: Ticket, member: GuildMember) {
             new ActionRowBuilder<ButtonBuilder>()
                 .setComponents(
                     new ButtonBuilder()
-                        .setCustomId("add_membrer")
-                        .setLabel("Adicionar Membro")
+                        .setCustomId("add_member_button")
+                        .setLabel("Adicionar membros")
                         .setStyle(ButtonStyle.Primary),
                     new ButtonBuilder()
                         .setCustomId("close_ticket")
                         .setLabel("🗙 Fechar ticket")
-                        .setStyle(ButtonStyle.Primary)
+                        .setStyle(ButtonStyle.Danger)
 
                 )
         ),
         new TextDisplayBuilder().setContent("<@" + member.id + ">, <@&1364270135564566538>")
     ]
 
+}
+
+export function CloseTicketComponent() {
+    return new ContainerBuilder()
+        .addTextDisplayComponents(new TextDisplayBuilder().setContent("### O que você quer fazer com o ticket?"))
+        .addSeparatorComponents(new SeparatorBuilder())
+        .addActionRowComponents(
+            new ActionRowBuilder<ButtonBuilder>()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setEmoji("🗑️")
+                        .setLabel("Excluir Ticket")
+                        .setStyle(ButtonStyle.Secondary)
+                        .setCustomId("delete_ticket"),
+                    new ButtonBuilder()
+                        .setEmoji("📥")
+                        .setLabel("Arquivar Ticket")
+                        .setStyle(ButtonStyle.Primary)
+                        .setCustomId("archive_ticket"
+
+                        ))
+        )
 }

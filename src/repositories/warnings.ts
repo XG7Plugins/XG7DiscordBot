@@ -29,7 +29,6 @@ export default class WarningsRepository implements Repository<number, WarningMod
         return database.query(
             `SELECT * FROM ${this.table} WHERE id = ?`,
             [id]
-
         )
     }
     update(value: WarningModel): Promise<WarningModel> {
