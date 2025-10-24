@@ -100,8 +100,6 @@ export async function createTicket(member: GuildMember, type: string): Promise<T
             ]
         });
 
-        console.log("CHANNEL ID" + channel.id);
-
         const ticket = {
             id: channel.id,
             owner_id: member.id,
