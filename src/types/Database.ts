@@ -27,7 +27,7 @@ export class DatabasePool {
 
         this.registerRepositories().then(() => {
             this.repositories.forEach(async (repository) => {
-                await repository.createTable().then(async (table) => console.log("Tabela " + table + " criada com sucesso!"));
+                await repository.createTable();
             })
         })
 

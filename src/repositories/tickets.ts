@@ -2,8 +2,8 @@ import {Repository} from "../types/database/Repository";
 import {Ticket} from "../types/database/models/Ticket";
 import {client, config, database} from "../index";
 import console from "node:console";
-import {TicketComponent} from "../components/template/ticket";
-import {GuildMember, MessageFlags} from "discord.js";
+import {CloseTicketComponent, TicketComponent} from "../components/template/ticket";
+import {GuildMember, MessageFlags, TextChannel} from "discord.js";
 
 export default class TicketsRepository implements Repository<string, Ticket> {
     table = "tickets";
@@ -13,7 +13,6 @@ export default class TicketsRepository implements Repository<string, Ticket> {
             id VARCHAR(255) NOT NULL UNIQUE,
             owner_id VARCHAR(255) NOT NULL UNIQUE,
             category ENUM('plugin', 'bug', 'sugestão', 'denúncia', 'outro') NOT NULL,
-            added_members MEDIUMTEXT NOT NULL,
             closed BOOLEAN NOT NULL DEFAULT FALSE,
             created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY(id)
@@ -25,8 +24,8 @@ export default class TicketsRepository implements Repository<string, Ticket> {
     }
     insert(value: Ticket): Promise<void> {
         return database.query(
-            `INSERT INTO ${this.table} (id, owner_id, category, added_members) VALUES (?,?, ?, ?)`,
-            [value.id, value.owner_id, value.type, '[]']
+            `INSERT INTO ${this.table} (id, owner_id, category) VALUES (?,?, ?)`,
+            [value.id, value.owner_id, value.type]
         )
     }
     async select(id: string): Promise<Ticket | null> {
@@ -40,8 +39,8 @@ export default class TicketsRepository implements Repository<string, Ticket> {
     update(value: Ticket): Promise<Ticket> {
         return database.query(
             `UPDATE ${this.table}
-            SET added_members = ?, closed = ? WHERE id = ?`,
-            [value.added_members, value.closed, value.id]
+            SET closed = ? WHERE id = ?`,
+            [value.closed, value.id]
         )
     }
     delete(id: string): Promise<void> {
@@ -80,7 +79,7 @@ export async function createTicket(member: GuildMember, type: string): Promise<T
 
     try {
         const channel = await guild.channels.create({
-            name: "🎟️・ticket-" + member.user.username,
+            name: (member.roles.cache.hasAny("1424094092304056492", "1328930300364849203", "1235570566778327152") ? "💎" : "🎟️") + "・ticket-" + member.user.username,
             type: 0,
             parent: config.channels.tickets_category,
             topic: `Ticket de <@${member.id}> | Tipo: ${type}`,
@@ -117,5 +116,64 @@ export async function createTicket(member: GuildMember, type: string): Promise<T
     } catch (err) {
         console.log(err);
         return null;
+    }
+}
+
+export async function closeTicket(interaction: any, member: GuildMember, channel: TextChannel): Promise<void> {
+    await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
+
+    const ticketID = channel.id;
+    const repo = database.repositories.get("tickets") as TicketsRepository;
+
+    if (!repo) {
+        await interaction.editReply("Erro ao acessar o banco de dados.");
+        return;
+    }
+
+    try {
+        const ticket = await repo.select(ticketID);
+
+        if (!ticket) {
+            await interaction.editReply("Ticket não encontrado no banco de dados.");
+            return;
+        }
+
+        const guild = client.getMainGuild();
+        if (!guild) return;
+
+        const owner = await guild.members.fetch(ticket.owner_id).catch(() => null);
+
+        await channel.guild.members.fetch();
+
+        const members = channel.members;
+
+        for (const member of members.values()) {
+            if (!channel.permissionsFor(member)?.has("ViewChannel")) continue;
+            if (member.roles.cache.has("1364270135564566538")) continue;
+            await channel.permissionOverwrites.delete(member.id);
+        }
+
+        await channel.send(`🔒 Ticket fechado por ${member.user.tag}. ${owner}, você não tem mais acesso a este canal.`);
+
+
+        await channel.setName(`❌・closed-${owner ? owner.user.username : "unknown"}`);
+
+        await repo.update({
+            ...ticket,
+            closed: true
+        });
+
+        await channel.send({
+            components: [CloseTicketComponent()],
+            flags: [MessageFlags.IsComponentsV2]
+        })
+
+        interaction.editReply("Ticket fechado com sucesso!")
+
+
+
+    } catch (err) {
+        console.error("Erro ao fechar o ticket:", err);
+        await interaction.editReply("❌ Erro ao fechar o ticket.");
     }
 }

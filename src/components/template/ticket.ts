@@ -97,7 +97,7 @@ export function TicketComponent(ticket: Ticket, member: GuildMember) {
                         .setStyle(ButtonStyle.Primary),
                     new ButtonBuilder()
                         .setCustomId("close_ticket")
-                        .setLabel("🗙 Fechar ticket")
+                        .setLabel("❌ Fechar ticket")
                         .setStyle(ButtonStyle.Danger)
 
                 )

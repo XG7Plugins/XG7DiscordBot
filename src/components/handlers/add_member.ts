@@ -45,30 +45,21 @@ export default class AddMemberMenu implements SelectMenuHandler{
 
         const membersToAdd = interaction.values;
 
-        repo.update({
-            ...ticket,
-            added_members: JSON.stringify(membersToAdd)
-        }).then(async () => {
-            for (const memberId of membersToAdd) {
-                await channel.permissionOverwrites.create(
-                    memberId,
-                    {
-                        SendMessages: true,
-                        ViewChannel: true,
-                        ReadMessageHistory: true,
-                        AttachFiles: true,
-                        AddReactions: true,
-                        UseExternalEmojis: true,
-                    }
-                )
-            }
-            await interaction.editReply("Membros adicionados com sucesso!");
-        }).catch(async (err) => {
-            console.error("Erro ao adicionar membros ao ticket:", err);
-            await interaction.editReply("Erro ao adicionar membros ao ticket.");
-            return;
-        })
+        for (const memberId of membersToAdd) {
+            await channel.permissionOverwrites.create(
+                memberId,
+                {
+                    SendMessages: true,
+                    ViewChannel: true,
+                    ReadMessageHistory: true,
+                    AttachFiles: true,
+                    AddReactions: true,
+                    UseExternalEmojis: true,
+                }
+            )
+        }
 
+        await interaction.editReply("Membros adicionados com sucesso!");
     }
 
 

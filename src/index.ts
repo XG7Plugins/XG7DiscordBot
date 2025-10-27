@@ -10,8 +10,6 @@ const client = new BotClient()
 client.init();
 
 const database = new DatabasePool()
-database.init()
-
 
 const STATE_PATH = path.resolve(process.cwd(), "data", "state.json");
 
@@ -28,4 +26,7 @@ export function saveState() {
 
 export { client, config, database, state };
 
-client.on("clientReady", () => console.log("Bot is ready!".green))
+client.on("clientReady", () => {
+    database.init()
+    console.log("Bot is ready!".green)
+})
