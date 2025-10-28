@@ -1,7 +1,4 @@
 {
-  "colors": {
-    "green": "#00FF00"
-  },
   "main_guild": "1206355714893815808",
   "bot_id": "1167899920334868540",
   "channels": {
@@ -14,7 +11,9 @@
     "afk_channel": "1349863104208437288",
 
     "color_channel": "1432165681855729846",
-    "vip_color_channel": "1432165999851077643"
+    "vip_color_channel": "1432165999851077643",
+
+    "announcements_channel": "1211382751480258583"
   },
   "changing_status": [
     {

@@ -5,9 +5,9 @@ import {
     GatewayIntentsString,
     IntentsBitField,
     Partials, REST,
-    Routes, SlashCommandBuilder
+    Routes, SlashCommandBuilder, TextChannel
 } from "discord.js";
-import {client, config, state} from "..";
+import {client, config, saveState, state} from "..";
 import 'dotenv/config';
 import {Command} from "./discord/Command";
 import fileS from "fs";
@@ -41,7 +41,10 @@ export class BotClient extends Client {
         this.registerComponentsHandlers();
         this.registerEvents();
         this.registerCommands();
-        this.once("clientReady", () => this.initStatusChange())
+        this.once("clientReady", () => {
+            this.initStatusChange()
+            this.initGiveawayTask()
+        })
         this.login(process.env.BOT_TOKEN).then(() => console.log("Bot logado com sucesso!".rainbow));
 
     }
@@ -152,6 +155,82 @@ export class BotClient extends Client {
 
     getMainGuild() {
         return this.guilds.cache.get(config.main_guild);
+    }
+
+    initGiveawayTask() {
+        setInterval(() => {
+            state.giveaways.forEach(async (giveaway: { end: number; id: string; }) => {
+                if (giveaway.end < Date.now()) {
+                    await this.finishGiveaway(giveaway.id, true);
+                    state.giveaways.splice(state.giveaways.indexOf(giveaway), 1);
+                    await saveState()
+                }
+            })
+
+
+        },1000)
+    }
+
+    async finishGiveaway(id: string, reward?: boolean) {
+
+        const guild = this.getMainGuild();
+
+        if (!guild) return;
+
+        const giveaway = state.giveaways.find((g: { id: string; }) => g.id === id);
+
+        if (!giveaway) return;
+
+        const channel = guild.channels.cache.get(config.channels.announcements_channel) as TextChannel;
+        if (!channel) return;
+
+        let message = channel.messages.cache.get(giveaway.messageId);
+        if (!message) {
+            try {
+                message = await channel.messages.fetch(giveaway.messageId);
+            } catch {
+                message = undefined;
+            }
+        }
+
+        if (!reward && message) {
+            await message.reply("Sorteio **\"" + giveaway.title + "\"** finalizado! <@&1432574364716499038>")
+            await message.delete()
+            return;
+        }
+
+        const winners: string[] = []
+
+        const entries = [...giveaway.entries];
+
+        if (entries.length === 0) {
+
+            if (message) await message.reply("Sorteio **\"" + giveaway.title + "\"** finalizado! <@&1432574364716499038>\nNão houve participantes para sorteio.")
+            return
+        }
+
+        const uniqueParticipants = new Set(entries);
+
+        const maxWinners = Math.min(giveaway.winners, uniqueParticipants.size);
+
+        for (let i = 0; i < maxWinners; i++) {
+            const index = Math.floor(Math.random() * entries.length);
+            const candidate = entries[index];
+
+            winners.push(candidate);
+
+            for (let j = entries.length - 1; j >= 0; j--) {
+                if (entries[j] === candidate) entries.splice(j, 1);
+            }
+        }
+
+        if (message) {
+            await message.reply({
+                content: "Sorteio **\"" + giveaway.title + "\"** finalizado! <@&1432574364716499038>\nVencedores: " + winners.map(w => "<@" + w + ">").join(", ")
+            })
+            await message.delete()
+        }
+
     }
 
     onToggleMaintenance() {
