@@ -24,7 +24,7 @@ export default new Command({
             )
             .addSubcommand(sub =>
                 sub
-                    .setName("voice_time")
+                    .setName("voice")
                     .setDescription("Ver top tempo em call")
                     .addIntegerOption(option => option.setName("page").setDescription("Página").setRequired(false))
 
@@ -54,7 +54,7 @@ export default new Command({
 
         if (!member) return;
 
-        const type = options.getSubcommand() as "messages" | "xp" | "voice_time";
+        const type = options.getSubcommand() as "messages" | "xp" | "voice";
 
         const pageNumber = options.getInteger("page") ?? 1;
 
@@ -85,7 +85,7 @@ export default new Command({
 /**
  * Gera imagem de TOP
  */
-export async function generateTopImage(page: number, type: "messages" | "xp" | "voice_time", member: GuildMember, profile: Profile) {
+export async function generateTopImage(page: number, type: "messages" | "xp" | "voice", member: GuildMember, profile: Profile) {
     const guild = client.getMainGuild();
     if (!guild) return;
     const repo = database.repositories.get("profiles") as ProfileRepository;
@@ -148,7 +148,7 @@ export async function generateTopImage(page: number, type: "messages" | "xp" | "
         ctx.fillText(text, avatarSize + spacing * 2, y + img.height / 2);
 
         // pontuação
-        const pointText = type === "voice_time" ? formatTime(point) + "📢" : type === "messages" ?
+        const pointText = type === "voice" ? formatTime(point) + "📢" : type === "messages" ?
             point.toString() + "🗨️" : point.toString() + "💎";
         ctx.textAlign = "right";
         ctx.fillText(pointText, img.width - spacing, y + img.height / 2);

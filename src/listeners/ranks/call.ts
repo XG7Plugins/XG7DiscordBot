@@ -83,15 +83,17 @@ export async function saveTime(member: GuildMember, profile: Profile, deleteFrom
     const HOUR_24 = 24 * 60 * 60 * 1000; // 24 horas
     const WEEK_1 = 7 * 24 * 60 * 60 * 1000; // 1 semana
     const HOUR_24_CONT = 24 * 60 * 60 * 1000; // tempo contínuo
+    const HOUR_36_CONT = 36 * 60 * 60 * 1000;
     const HOUR_48_CONT = 48 * 60 * 60 * 1000;
 
-    if (profile.voiceTime >= MIN_10) await award(AchievementID.PegandoALabia);
-    if (profile.voiceTime >= HOUR_2) await award(AchievementID.Palestrante);
-    if (profile.voiceTime >= HOUR_6) await award(AchievementID.FilaDoSUS);
-    if (profile.voiceTime >= HOUR_24) await award(AchievementID.Dormi);
+    if (profile.voiceTime >= MIN_10) await award(AchievementID.Interaja);
+    if (profile.voiceTime >= HOUR_2) await award(AchievementID.Discurso);
+    if (profile.voiceTime >= HOUR_6) await award(AchievementID.Palestrante);
+    if (profile.voiceTime >= HOUR_24) await award(AchievementID.SoMaisUma);
     if (profile.voiceTime >= WEEK_1) await award(AchievementID.AquiEMinhaCasa);
 
-    if (time >= HOUR_24_CONT) await award(AchievementID.Desocupado);
+    if (time >= HOUR_24_CONT) await award(AchievementID.Dormiu);
+    if (time >= HOUR_36_CONT) await award(AchievementID.Desocupado);
     if (time >= HOUR_48_CONT) await award(AchievementID.JaTocouNaGrama);
 
     if (deleteFromMap) activeTimes.delete(profile.id);

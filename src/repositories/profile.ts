@@ -2,9 +2,12 @@ import {Repository} from "../types/database/Repository";
 import {Profile} from "../types/database/models/Profile";
 import {client, database} from "../index";
 import console from "node:console";
-import {GuildMember, Snowflake} from "discord.js";
+import {AttachmentBuilder, GuildMember, Snowflake} from "discord.js";
 import {AchievementID, getAchievement, getAchievementByNumber} from "../types/database/models/Achievements";
 import {awardAchievementToProfile} from "./profile_achievements";
+import * as fs from "node:fs";
+import {createCanvas, loadImage, registerFont} from "canvas";
+import {writeFileSync} from "fs";
 
 export default class ProfileRepository implements Repository<string, Profile> {
     table = "profiles";
@@ -24,8 +27,7 @@ export default class ProfileRepository implements Repository<string, Profile> {
                 messages BIGINT DEFAULT 0,
                 voiceTime BIGINT DEFAULT 0,
                 digitGameVictories BIGINT DEFAULT 0,
-                profileBg TINYINT DEFAULT 1,
-                profileBgURL TEXT
+                profileBgPath TEXT
                 )
         `, []).then(async result => {
             console.log("Tabela profiles criada com sucesso!".green);
@@ -51,8 +53,7 @@ export default class ProfileRepository implements Repository<string, Profile> {
                         xp: 0,
                         messages: 0,
                         voiceTime: 0,
-                        profileBgID: Math.floor(Math.random() * 23) + 1,
-                        profileBgURL: undefined,
+                        profileBgPath: `./src/assets/images/profile_bgs/${Math.floor(Math.random() * getProfileBGCount()) + 1}.jpg`,
                         digitGameVictories: 0,
                         profileAchievements: []
                     })
@@ -66,9 +67,9 @@ export default class ProfileRepository implements Repository<string, Profile> {
     }
     insert(value: Profile): Promise<void> {
         return database.query(
-            `INSERT INTO ${this.table} (id, bio, xp, messages, voiceTime, digitGameVictories, profileBg)
+            `INSERT INTO ${this.table} (id, bio, xp, messages, voiceTime, digitGameVictories, profileBgPath)
              VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [value.id, value.bio, value.xp, value.messages, value.voiceTime, value.digitGameVictories, value.profileBgID]
+            [value.id, value.bio, value.xp, value.messages, value.voiceTime, value.digitGameVictories, value.profileBgPath]
         );
     }
 
@@ -82,8 +83,7 @@ export default class ProfileRepository implements Repository<string, Profile> {
                     p.xp,
                     p.messages,
                     p.voiceTime,
-                    p.profileBg,
-                    p.profileBgURL,
+                    p.profileBgPath,
                     p.digitGameVictories,
                     pa.achievement_id,
                     pa.obtained_at
@@ -103,8 +103,7 @@ export default class ProfileRepository implements Repository<string, Profile> {
             bio: rows[0].bio,
             giveawayEntries: rows[0].giveawayEntries,
             xp: rows[0].xp,
-            profileBgID: rows[0].profileBg,
-            profileBgURL: rows[0].profileBgURL,
+            profileBgPath: rows[0].profileBgPath,
             messages: rows[0].messages,
             voiceTime: rows[0].voiceTime,
             digitGameVictories: rows[0].digitGameVictories,
@@ -127,9 +126,9 @@ export default class ProfileRepository implements Repository<string, Profile> {
     update(value: Profile): Promise<Profile> {
         return database.query(
             `UPDATE ${this.table}
-             SET bio = ?, xp = ?, giveawayEntries = ?, messages = ?, profileBg = ?, voiceTime = ?, digitGameVictories = ?, profileBgURL = ?
+             SET bio = ?, xp = ?, giveawayEntries = ?, messages = ?, voiceTime = ?, digitGameVictories = ?, profileBgPath = ?
              WHERE id = ?`,
-            [value.bio, value.xp, value.giveawayEntries, value.messages, value.profileBgID, value.voiceTime, value.digitGameVictories, value.profileBgURL, value.id]
+            [value.bio, value.xp, value.giveawayEntries, value.messages, value.voiceTime, value.digitGameVictories, value.profileBgPath, value.id]
         );
     }
 
@@ -154,9 +153,9 @@ export default class ProfileRepository implements Repository<string, Profile> {
         }
     }
 
-    async getLeaderboard(type: "messages" | "xp" | "voice_time", limit: number = 10): Promise<{id: string, point: number}[]> {
+    async getLeaderboard(type: "messages" | "xp" | "voice", limit: number = 10): Promise<{id: string, point: number}[]> {
 
-        const translatedType = type === "voice_time" ? "voiceTime" : type;
+        const translatedType = type === "voice" ? "voiceTime" : type;
 
         const [rows] = await database.query(
             `SELECT id, ${translatedType}
@@ -201,9 +200,8 @@ export async function getOrCreateProfile(id: string): Promise<Profile | null> {
                 giveawayEntries: 1,
                 xp: 0,
                 messages: 0,
-                profileBgURL: undefined,
+                profileBgPath: `./src/assets/images/profile_bgs/${Math.floor(Math.random() * getProfileBGCount()) + 1}.jpg`,
                 voiceTime: 0,
-                profileBgID: Math.floor(Math.random() * 23) + 1,
                 digitGameVictories: 0,
                 profileAchievements: []
             };
@@ -244,7 +242,7 @@ export async function addXP(member: GuildMember, profile: Profile, xp: number): 
     if (profile.messages >= 100000) multiplier *= 2
 
 
-    const newXP = profile.xp + xp * multiplier;
+    const newXP = Math.round(profile.xp + xp * multiplier);
     const newLevel = getLevelInfo(newXP).level;
 
     const oldLevel = getLevelInfo(profile.xp).level;
@@ -267,7 +265,12 @@ export async function addXP(member: GuildMember, profile: Profile, xp: number): 
 
     if (newLevel > oldLevel) {
 
-        member.send("Parabéns! Você atingiu o level " + newLevel + " no XG7Plugins! (" + newLevel + "/77)").catch(() => null);
+        await generateImage(member, oldLevel, newLevel);
+
+        member.send({
+            content: "Parabéns! Você atingiu o level " + newLevel + " no XG7Plugins! (" + newLevel + "/77)",
+            files: [new AttachmentBuilder("./src/assets/generated/level_up.png")]
+        }).catch(() => null);
 
         if (newLevel == 77) {
             await awardAchievementToProfile(member, profile, getAchievement(AchievementID.Mestre))
@@ -278,9 +281,6 @@ export async function addXP(member: GuildMember, profile: Profile, xp: number): 
             if (reward.giveaway) profile.giveawayEntries += reward.giveaway;
 
             if (reward.role) {
-                member.roles.add("1431395111870402592").catch(() => null); // Role de membro
-
-
                 const oldRoles = Object.values(levelRewards)
                     .map(r => r.role)
                     .filter(id => id && member.roles.cache.has(<Snowflake>id));
@@ -295,6 +295,62 @@ export async function addXP(member: GuildMember, profile: Profile, xp: number): 
     await repo.update(profile);
 
     return profile;
+}
+
+/**
+ * Gera imagem de perfil (rank card)
+ */
+export async function generateImage(member: GuildMember, oldLevel: number, newLevel: number) {
+
+    const guild = client.getMainGuild();
+
+    if (!guild) return;
+
+    const repo = database.repositories.get("profiles") as ProfileRepository;
+    if (!repo) return;
+
+    const bg = await loadImage("./src/assets/images/level_up.png");
+    const canvas = createCanvas(bg.width, bg.height);
+    const ctx = canvas.getContext("2d");
+
+    registerFont('./src/assets/font/Bauhaus.ttf', { family: 'Bauhaus' });
+
+    // Fundo
+    ctx.drawImage(bg, 0, 0);
+
+    // ====== FOTO DO USUÁRIO ======
+    const avatar = await loadImage(member.displayAvatarURL({ extension: "png", size: 256 }));
+    const avatarSize = 170;
+    const avatarX = 163.45;
+    const avatarY = 140.5;
+    ctx.save();
+
+    const radius = 20;
+    ctx.beginPath();
+    ctx.roundRect(avatarX - avatarSize/2, avatarY - avatarSize/2, avatarSize, avatarSize, radius);
+    ctx.clip();
+
+    ctx.drawImage(
+        avatar,
+        avatarX - avatarSize / 2 ,
+        avatarY - avatarSize / 2 ,
+        avatarSize,
+        avatarSize
+    );
+    ctx.restore();
+
+    // ====== LEVEL ======
+
+    const levelX = 606
+
+    ctx.textAlign = "center";
+    ctx.font = "bold 48px Bauhaus";
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(`Nível: ${oldLevel} - ${newLevel}`, levelX, 140.5);
+
+    // ====== SALVAR ======
+    const buffer = canvas.toBuffer("image/png");
+    writeFileSync(`./src/assets/generated/level_up.png`, buffer);
 }
 
 
@@ -318,5 +374,9 @@ export function getLevelInfo(xp: number) {
     else { level = 77; xpForNextLevel = 7777777; }
 
     return { level, xpForNextLevel };
+}
+
+export function getProfileBGCount(): number {
+    return fs.readdirSync("./src/assets/images/profile_bgs").length;
 }
 

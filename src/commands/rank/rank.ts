@@ -23,6 +23,8 @@ export default new Command({
     },
     run: async ({ interaction, options }) => {
 
+        await interaction.deferReply()
+
         const guild = client.getMainGuild();
 
         if (!guild) return
@@ -38,14 +40,14 @@ export default new Command({
 
         getOrCreateProfile(user.id).then(async profile => {
 
-            if (!profile) return await interaction.reply("Perfil não encontrado.");
+            if (!profile) return await interaction.editReply("Perfil não encontrado.");
 
             await saveTime(member, profile, false);
 
             await generateImage(member, profile);
 
             const attachment = new AttachmentBuilder("./src/assets/generated/rank.png");
-            await interaction.reply({ content: "<@" + interaction.user.id + ">", files: [attachment] });
+            await interaction.editReply({ content: "<@" + interaction.user.id + ">", files: [attachment] });
 
 
         }).catch(err => {
@@ -132,20 +134,27 @@ export async function generateImage(member: GuildMember, profile: Profile) {
         .filter(r => colorRoles.includes(r.id))
         .first();
 
+    let displayName = member.user.username;
+
+    if (member.roles.cache.has("1235570566778327152")) displayName += "💎"
+    if (member.roles.cache.hasAny("1328930300364849203", "1424094092304056492")) displayName += "🌟"
+    if (member.roles.cache.has("1364270135564566538")) displayName += "⚒️"
+    if (member.roles.cache.has("1348081207925018624")) displayName += "💖"
+
     const nameX = 380
     const nameY = 75
 
     ctx.textAlign = "left";
 
-    ctx.font = `bold ${member.user.username.length > 20 ? "24px": "32px"} Bauhaus`;
+    ctx.font = `bold ${displayName.length > 20 ? "24px": "32px"} Bauhaus`;
 
 
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 2;
     ctx.strokeStyle = "#ffffff";
-    ctx.strokeText(member.user.username, nameX, nameY);
+    ctx.strokeText(displayName, nameX, nameY);
 
     ctx.fillStyle = memberColorRole ? memberColorRole.hexColor : "#ffffff";
-    ctx.fillText(member.user.username, nameX, nameY);
+    ctx.fillText(displayName, nameX, nameY);
 
     // ====== BARRA DE XP ======
     const barX = 609; // centro da barra

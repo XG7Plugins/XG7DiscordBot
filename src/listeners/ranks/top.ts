@@ -15,6 +15,8 @@ export default new Listener({
 
         if (!id.startsWith("top_")) return;
 
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral});
+
         // Divide o ID em partes
         const [, type, pageStr] = id.split("_");
         const page = Number(pageStr);
@@ -26,7 +28,7 @@ export default new Listener({
         await guild.members.fetch();
 
         if (page < 0 || page > Math.floor(guild.members.cache.size / 10 + 1)) {
-            await interaction.reply({content: "Página fora do limite!", flags: MessageFlags.Ephemeral});
+            await interaction.editReply({content: "Página fora do limite!"});
             return;
         }
 
@@ -42,15 +44,16 @@ export default new Listener({
 
         getOrCreateProfile(user.id).then(async profile => {
 
-            if (!profile) return await interaction.reply("Perfil não encontrado.");
+            if (!profile) return await interaction.editReply("Perfil não encontrado.");
 
-            await generateTopImage(page, type as "messages" | "xp" | "voice_time", member, profile);
+            await generateTopImage(page, type as "messages" | "xp" | "voice", member, profile);
 
             const attachment = new AttachmentBuilder("./src/assets/generated/top.png");
 
-            interaction.message.edit({ files: [attachment], components: [TopComponent(page, Math.floor(guild.members.cache.size / 10) + 1, type as "messages" | "xp" | "voice_time")] });
+            await interaction.message.edit({ files: [attachment], components: [TopComponent(page, Math.floor(guild.members.cache.size / 10) + 1, type as "messages" | "xp" | "voice")] });
 
-            await interaction.deferUpdate();
+            await interaction.editReply("Página alterada!")
+
         });
 
 

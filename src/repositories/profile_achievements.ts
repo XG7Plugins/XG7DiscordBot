@@ -2,8 +2,9 @@ import { Repository } from "../types/database/Repository";
 import {Achievement, Profile, ProfileAchievement} from "../types/database/models/Profile";
 import { database } from "../index";
 import {getAchievementByNumber} from "../types/database/models/Achievements";
-import {GuildMember} from "discord.js";
+import {AttachmentBuilder, GuildMember} from "discord.js";
 import {addXP} from "./profile";
+import {generateAchievementImage} from "../commands/profile/achievement";
 
 export default class ProfileAchievementsRepository implements Repository<number, ProfileAchievement> {
     table = "profile_achievements";
@@ -85,7 +86,18 @@ export async function awardAchievementToProfile(
 
     await addXP(member, profile, achievement.xp);
 
-    member.send(
-        `Você conseguiu a conquista **${achievement.name}**!\nGanhando ${achievement.xp}XP.\n${achievement.description}`
-    ).catch(() => {});
+    profile.profileAchievements.push({
+        profile_id: profile.id,
+        achievement: achievement,
+        obtainedAt: new Date()
+    })
+
+    await generateAchievementImage(member, achievement, profile);
+
+    const attachment = new AttachmentBuilder(`./src/assets/generated/achievement.png`);
+
+    member.send({
+            content: `Você conseguiu a conquista **${achievement.name}**!\nGanhando ${achievement.xp}XP.`,
+            files: [attachment],
+        }).catch(() => {});
 }

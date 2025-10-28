@@ -9,7 +9,7 @@ import {
 } from "discord.js";
 import {MediaGalleryItemBuilder} from "@discordjs/builders";
 
-export default function TopComponent(pageNumber: number, maxPage: number, type: "messages" | "xp" | "voice_time") {
+export default function TopComponent(pageNumber: number, maxPage: number, type: "messages" | "xp" | "voice") {
 
     const title =
         type === "messages" ? "## 💎 TOP 10 de mensagens"

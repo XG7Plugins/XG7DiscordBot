@@ -53,11 +53,11 @@ export default new Listener({
                 break
 
             case 10000:
-                await award(AchievementID.TCC)
+                await award(AchievementID.Dicionario)
                 break
 
             case 100000:
-                await award(AchievementID.Dicionario)
+                await award(AchievementID.Biblioteca)
                 break
 
         }

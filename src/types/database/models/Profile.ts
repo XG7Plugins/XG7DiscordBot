@@ -11,8 +11,7 @@ export type Profile = {
     voiceTime: number;
     digitGameVictories: number;
 
-    profileBgID: number;
-    profileBgURL: string | undefined;
+    profileBgPath: string;
 
     profileAchievements: ProfileAchievement[];
 
@@ -30,4 +29,5 @@ export interface Achievement {
     name: string;
     description: string;
     xp: number;
+    bannerURL: string;
 }
