@@ -33,6 +33,7 @@ export default new Listener({
                 case "stop":
                     if (!message.member!.permissions.has("Administrator")) {
                         message.reply("Você não tem permissão para parar o jogo!")
+                        return
                     }
                     await digitGame.finishGame(true)
                     return
