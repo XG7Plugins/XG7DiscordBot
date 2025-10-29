@@ -1,7 +1,7 @@
 import {Command} from "../../types/discord/Command";
 import {AttachmentBuilder, GuildMember, MessageFlags, SlashCommandBuilder} from "discord.js";
 import {InteractionContextType} from "discord-api-types/v10";
-import ProfileRepository, {getOrCreateProfile} from "../../repositories/profile";
+import ProfileRepository, {getLevelInfo, getOrCreateProfile} from "../../repositories/profile";
 import {saveTime} from "../../listeners/ranks/call";
 import {client, database} from "../../index";
 import {createCanvas, loadImage, registerFont} from "canvas";
@@ -98,6 +98,7 @@ export async function generateTopImage(page: number, type: "messages" | "xp" | "
     const img = await loadImage("./src/assets/images/top_bg.png");
 
     registerFont('./src/assets/font/Bauhaus.ttf', { family: 'Bauhaus' });
+    registerFont('./src/assets/font/NotoColorEmoji.ttf', { family: 'Emoji' });
 
     const spacing = 20;
 
@@ -110,7 +111,7 @@ export async function generateTopImage(page: number, type: "messages" | "xp" | "
     const avatarSize = 56;
     const rowHeight = img.height + 10; // adiciona espaço transparente entre linhas
 
-    ctx.font = '20px Bauhaus';
+    ctx.font = '20px Emoji, Bauhaus';
     ctx.fillStyle = '#ffffff';
     ctx.textBaseline = 'middle';
 
@@ -145,7 +146,7 @@ export async function generateTopImage(page: number, type: "messages" | "xp" | "
         ctx.restore();
 
         // nome de usuário
-        const text = `#${pos + 1} . ${user.user.username}`;
+        const text = `#${pos + 1} . ${user.user.username} ${type === "xp" ? "(" + getLevelInfo(profile.xp).level.toString() + ")" : ""}`;
         ctx.textAlign = "left";
         ctx.fillText(text, avatarSize + spacing * 2, y + img.height / 2);
 

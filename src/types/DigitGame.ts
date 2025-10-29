@@ -279,7 +279,7 @@ function gerarImagemComPalavra(palavra: string) {
     ctx.fillRect(0, 0, width, height);
 
     // texto
-    ctx.font = "bold 40px Sans";
+    ctx.font = `bold ${palavra.length > 16 ? 32 : 40}px Sans`;
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";

@@ -159,9 +159,9 @@ export default class ProfileRepository implements Repository<string, Profile> {
 
         const [rows] = await database.query(
             `SELECT id, ${translatedType}
-         FROM ${this.table}
-         ORDER BY ${translatedType} DESC
-         LIMIT ?`,
+             FROM ${this.table}
+             ORDER BY ${translatedType} DESC
+                 LIMIT ?`,
             [limit]
         );
         return rows.map((r: any) => ({ id: r.id, point: Number(r[translatedType]) }));
@@ -170,9 +170,9 @@ export default class ProfileRepository implements Repository<string, Profile> {
     async getUserPosition(userId: string): Promise<{position: number, xp: number}> {
         const [rows] = await database.query(
             `SELECT id, xp
-         FROM ${this.table}
-         ORDER BY xp DESC`
-        ,[]);
+             FROM ${this.table}
+             ORDER BY xp DESC`
+            ,[]);
 
         for (let i = 0; i < rows.length; i++) {
             if (rows[i].id === userId) {
@@ -314,6 +314,7 @@ export async function generateImage(member: GuildMember, oldLevel: number, newLe
     const ctx = canvas.getContext("2d");
 
     registerFont('./src/assets/font/Bauhaus.ttf', { family: 'Bauhaus' });
+    registerFont('./src/assets/font/NotoColorEmoji.ttf', { family: 'Emoji' });
 
     // Fundo
     ctx.drawImage(bg, 0, 0);
@@ -344,7 +345,7 @@ export async function generateImage(member: GuildMember, oldLevel: number, newLe
     const levelX = 606
 
     ctx.textAlign = "center";
-    ctx.font = "bold 48px Bauhaus";
+    ctx.font = "bold 48px Emoji, Bauhaus";
     ctx.fillStyle = "#ffffff";
     ctx.fillText(`Nível: ${oldLevel} - ${newLevel}`, levelX, 140.5);
 
@@ -355,25 +356,106 @@ export async function generateImage(member: GuildMember, oldLevel: number, newLe
 
 
 export function getLevelInfo(xp: number) {
-    let level: number;
-    let xpForNextLevel: number;
+    const xpLevels: number[] = [
+        0,      // level 0
+        25,     // 1
+        100,    // 2
+        1000,   // 3
+        2000,   // 4
+        5000,   // 5
+        10000,  // 6
+        20000,  // 7
+        30000,  // 8
+        40000,  // 9
+        50000,  // 10
+        60000,  // 11
+        70000,  // 12
+        80000,  // 13
+        90000,  // 14
+        100000, // 15
+        110000, // 16
+        120000, // 17
+        130000, // 18
+        140000, // 19
+        150000, // 20
+        160000, // 21
+        170000, // 22
+        180000, // 23
+        190000, // 24
+        200000, // 25
+        300000, // 26
+        400000, // 27
+        500000, // 28
+        600000, // 29
+        700000, // 30
+        800000, // 31
+        900000, // 32
+        1000000, // 33
+        1100000, // 34
+        1200000, // 35
+        1300000, // 36
+        1400000, // 37
+        1500000, // 38
+        1600000, // 39
+        1700000, // 40
+        1800000, // 41
+        1900000, // 42
+        2000000, // 43
+        2100000, // 44
+        2200000, // 45
+        2300000, // 46
+        2400000, // 47
+        2500000, // 48
+        2600000, // 49
+        2700000, // 50
+        2800000, // 51
+        2900000, // 52
+        3000000, // 53
+        3200000, // 54
+        3400000, // 55
+        3600000, // 56
+        3800000, // 57
+        4000000, // 58
+        4200000, // 59
+        4400000, // 60
+        4600000, // 61
+        4800000, // 62
+        5000000, // 63
+        5200000, // 64
+        5400000, // 65
+        5600000, // 66
+        5800000, // 67
+        6000000, // 68
+        6200000, // 69
+        6400000, // 70
+        6600000, // 71
+        6800000, // 72
+        7000000, // 73
+        7200000, // 74
+        7400000, // 75
+        7600000, // 76
+        7777777  // 77 (máximo)
+    ];
 
-    if (xp < 25) { level = 0; xpForNextLevel = 25; }
-    else if (xp < 100) { level = 1; xpForNextLevel = 100; }
-    else if (xp < 1000) { level = 2; xpForNextLevel = 1000; }
-    else if (xp < 2000) { level = 3; xpForNextLevel = 2000; }
-    else if (xp < 5000) { level = 4; xpForNextLevel = 5000; }
-    else if (xp < 10000) { level = 5; xpForNextLevel = 10000; }
-    else if (xp < 20000) { level = 6; xpForNextLevel = 20000; }
-    else if (xp < 30000) { level = 7; xpForNextLevel = 30000; }
-    else if (xp < 100000) { level = 8 + Math.floor((xp - 30000) / 10000); xpForNextLevel = (level === 14 ? 100000 : 30000 + (level-7+1)*10000); }
-    else if (xp < 1000000) { level = 15 + Math.floor((xp - 100000) / 100000); xpForNextLevel = (15 + Math.floor((xp - 100000) / 100000) + 1) * 100000; }
-    else if (xp < 2000000) { level = 33 + Math.floor((xp - 1000000) / 100000); xpForNextLevel = (33 + Math.floor((xp - 1000000) / 100000) + 1) * 100000; }
-    else if (xp < 5000000) { level = 43 + Math.floor((xp - 2000000) / 200000); xpForNextLevel = (43 + Math.floor((xp - 2000000) / 200000) + 1) * 200000; }
-    else if (xp < 7777777) { level = 63 + Math.floor((xp - 5000000) / 200000); xpForNextLevel = 7777777; }
-    else { level = 77; xpForNextLevel = 7777777; }
+    let level = 0;
+    let currentLevelXp = 0;
+    let xpForNextLevel = xpLevels[1];
 
-    return { level, xpForNextLevel };
+    for (let i = 0; i < xpLevels.length; i++) {
+        if (xp < xpLevels[i]) {
+            level = i - 1;
+            currentLevelXp = xpLevels[Math.max(i - 1, 0)];
+            xpForNextLevel = xpLevels[i];
+            break;
+        }
+        if (i === xpLevels.length - 1) {
+            level = 77;
+            currentLevelXp = 7777777;
+            xpForNextLevel = 7777777;
+        }
+    }
+
+    return { level, xpForNextLevel, currentLevelXp };
 }
 
 export function getProfileBGCount(): number {

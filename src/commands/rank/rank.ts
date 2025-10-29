@@ -62,7 +62,7 @@ export default new Command({
  */
 export async function generateImage(member: GuildMember, profile: Profile) {
 
-    const {level, xpForNextLevel} = getLevelInfo(profile.xp);
+    const {level, xpForNextLevel, currentLevelXp} = getLevelInfo(profile.xp);
 
     const guild = client.getMainGuild();
 
@@ -78,6 +78,7 @@ export async function generateImage(member: GuildMember, profile: Profile) {
     const ctx = canvas.getContext("2d");
 
     registerFont('./src/assets/font/Bauhaus.ttf', { family: 'Bauhaus' });
+    registerFont('./src/assets/font/NotoColorEmoji.ttf', { family: 'Emoji' });
 
     // Fundo
     ctx.drawImage(bg, 0, 0);
@@ -109,7 +110,7 @@ export async function generateImage(member: GuildMember, profile: Profile) {
     const lvlY = 260.5
 
     ctx.textAlign = "center";
-    ctx.font = "bold 32px Bauhaus";
+    ctx.font = "bold 32px Emoji, Bauhaus";
     ctx.fillStyle = "#ffffff";
     ctx.fillText(`Nível: ${level}`, lvlX, lvlY);
 
@@ -119,7 +120,7 @@ export async function generateImage(member: GuildMember, profile: Profile) {
     const rankY = 75
 
     ctx.textAlign = "center";
-    ctx.font = "bold 52px Bauhaus";
+    ctx.font = "bold 52px Emoji, Bauhaus";
     ctx.fillStyle = "#ffffff";
     ctx.fillText(`#${leaderboardPos.position}`, rankX, rankY);
 
@@ -146,7 +147,7 @@ export async function generateImage(member: GuildMember, profile: Profile) {
 
     ctx.textAlign = "left";
 
-    ctx.font = `bold ${displayName.length > 20 ? "24px": "32px"} Bauhaus`;
+    ctx.font = `bold ${displayName.length > 20 ? "24px": "32px"} Emoji, Bauhaus`;
 
 
     ctx.lineWidth = 2;
@@ -161,7 +162,8 @@ export async function generateImage(member: GuildMember, profile: Profile) {
     const barY = bg.height / 2;
     const barWidth = 561;
     const barHeight = 38;
-    const progress = Math.min(profile.xp / xpForNextLevel, 1);
+
+    const progress = Math.min((profile.xp - currentLevelXp) / (xpForNextLevel - currentLevelXp), 1);
 
     // Barra de progresso
     ctx.fillStyle = "#00a4ea";
@@ -171,7 +173,7 @@ export async function generateImage(member: GuildMember, profile: Profile) {
 
 
     // Texto XP
-    ctx.font = "bold 22px Bauhaus";
+    ctx.font = "bold 22px Emoji, Bauhaus";
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -199,19 +201,19 @@ export async function generateImage(member: GuildMember, profile: Profile) {
     const statsY = 355;
 
     ctx.textAlign = "center";
-    ctx.font = "bold 28px Bauhaus";
+    ctx.font = "bold 28px Emoji, Bauhaus";
     ctx.fillStyle = "#ffffff";
 
     const messageText = "🗨️ " + profile.messages;
-    ctx.font = `bold ${messageText.length > 7 ? "22px" : "28px"} Bauhaus`;
+    ctx.font = `bold ${messageText.length > 7 ? "22px" : "28px"} Emoji, Bauhaus`;
     ctx.fillText(messageText, 412, statsY);
 
     const voiceText = `📢 ${formatTime(profile.voiceTime)}`;
-    ctx.font = `bold ${voiceText.length > 12 ? "18px" : voiceText.length > 7 ? "22px" : "28px"} Bauhaus`;
+    ctx.font = `bold ${voiceText.length > 12 ? "18px" : voiceText.length > 7 ? "22px" : "28px"} Emoji, Bauhaus`;
     ctx.fillText(voiceText, 606, statsY);
 
     const digitText = `🏆 ${profile.digitGameVictories}`;
-    ctx.font = `bold ${digitText.length > 7 ? "22px" : "28px"} Bauhaus`;
+    ctx.font = `bold ${digitText.length > 7 ? "22px" : "28px"} Emoji, Bauhaus`;
     ctx.fillText(digitText, 806, statsY);
 
     // ====== SALVAR ======

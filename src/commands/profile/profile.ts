@@ -333,6 +333,7 @@ export async function generateImage(member: GuildMember, profile: Profile) {
     const ctx = canvas.getContext("2d");
 
     registerFont('./src/assets/font/Bauhaus.ttf', { family: 'Bauhaus' });
+    registerFont('./src/assets/font/NotoColorEmoji.ttf', { family: 'Emoji' });
 
     // ====== FUNDO ======
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
@@ -383,7 +384,7 @@ export async function generateImage(member: GuildMember, profile: Profile) {
     if (member.roles.cache.has("1364270135564566538")) displayName += "⚒️"
     if (member.roles.cache.has("1348081207925018624")) displayName += "💖"
 
-    ctx.font = `${displayName.length > 11 ? "32px": "48px"} Bauhaus`;
+    ctx.font = `${displayName.length > 11 ? "32px": "48px"} Emoji, Bauhaus`;
     ctx.lineWidth = 2;
     ctx.strokeStyle = "#ffffff";
     ctx.strokeText(displayName, textX, textY);
@@ -400,7 +401,7 @@ export async function generateImage(member: GuildMember, profile: Profile) {
     const roleX = avatarX + avatarSize / 2; // centro do avatar
     const roleY = avatarY + avatarSize + 80;
 
-    ctx.font = `bold 32px Bauhaus`;
+    ctx.font = `bold 32px Emoji, Bauhaus`;
 
     ctx.fillStyle = "#ffffff";
     ctx.fillText(getRoleLevel(member.guild, getLevelInfo(profile.xp).level)?? "Iniciante", roleX, roleY);
@@ -421,7 +422,7 @@ export async function generateImage(member: GuildMember, profile: Profile) {
     const bioX = 30; // centro do avatar
     const bioY = footerY + 50;
 
-    ctx.font = `32px Bauhaus`;
+    ctx.font = `32px Emoji, Bauhaus`;
     ctx.lineWidth = 3;
 
     ctx.fillStyle = "#ffffff";
