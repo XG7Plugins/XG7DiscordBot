@@ -187,8 +187,13 @@ export async function generateImage(member: GuildMember, profile: Profile) {
     ctx.drawImage(chat, 347, statsY - 24, 28, 28);
 
     // Tempo de voz
-    ctx.font = `bold ${formatTime(profile.voiceTime).length > 6 ? "20px" : "28px"} Bauhaus`;
-    ctx.fillText(formatTime(profile.voiceTime), 671, statsY);
+
+    let timeText = formatTime(profile.voiceTime);
+
+    while (timeText.length > 7) timeText = timeText.substring(0, 4)
+
+    ctx.font = `bold ${timeText.length > 6 ? "20px" : "28px"} Bauhaus`;
+    ctx.fillText(timeText, 671, statsY);
     ctx.drawImage(megafone, 541, statsY - 24, 28, 28);
 
     // Vitorias
