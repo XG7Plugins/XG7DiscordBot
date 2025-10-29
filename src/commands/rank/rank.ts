@@ -188,9 +188,10 @@ export async function generateImage(member: GuildMember, profile: Profile) {
 
     // Tempo de voz
 
-    let timeText = formatTime(profile.voiceTime);
+    let timeText = formatTime(profile.voiceTime); // ex: "10h 20m 30s"
 
-    while (timeText.length > 7) timeText = timeText.substring(0, 4)
+    const parts = timeText.split(" ");
+    timeText = parts.slice(0, 2).join(" ");
 
     ctx.font = `bold ${timeText.length > 6 ? "20px" : "28px"} Bauhaus`;
     ctx.fillText(timeText, 671, statsY);
