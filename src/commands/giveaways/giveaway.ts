@@ -18,13 +18,6 @@ export default new Command({
             .setCustomId("giveaways-modal")
             .setTitle("Criar Sorteio");
 
-        const id = new TextInputBuilder()
-            .setCustomId("id")
-            .setLabel("Identificador")
-            .setStyle(TextInputStyle.Short)
-            .setMinLength(1)
-            .setRequired(true)
-
         const title = new TextInputBuilder()
             .setCustomId("title")
             .setLabel("Título")
@@ -63,7 +56,7 @@ export default new Command({
             .setPlaceholder("Ex: " + formatted)
             .setRequired(true)
 
-        modal.addComponents(id, title, description, winners, end)
+        modal.addComponents(title, description, winners, end)
 
         await interaction.showModal(modal)
     }

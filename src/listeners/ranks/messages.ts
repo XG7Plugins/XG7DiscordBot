@@ -26,7 +26,9 @@ export default new Listener({
 
         let xp = 10 * multiplier;
 
-        if (message.channelId === "1430398136668651561") xp += 10
+        if (message.channelId === "1430398136668651561") {
+            xp += 10 * (1 + message.content.length / 2 * 0.001)
+        }
 
         await addXP(member, profile, xp)
 

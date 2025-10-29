@@ -10,7 +10,7 @@ export default new Listener({
         if (!message.content.includes(`<@${config.bot_id}>`)) return;
 
         message.reply({
-            content: `Olá, ${message.author.username}. Sou o robô desse servidor, com o intuito de dar suporte a vocês! Infelizmente não posso atuar mais como uma IA generativa, mas quando eu obtiver suporte eu responderei todas as suas perguntas!`,
+            content: `Olá, ${message.author.username}. Sou o robô desse servidor, com o intuito de dar suporte e divertir a vocês! Infelizmente não posso atuar mais como uma IA generativa, mas quando eu obtiver suporte eu responderei todas as suas perguntas!`,
         })
 
     }

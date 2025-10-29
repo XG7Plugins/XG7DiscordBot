@@ -184,10 +184,10 @@ export class BotClient extends Client {
         const channel = guild.channels.cache.get(config.channels.announcements_channel) as TextChannel;
         if (!channel) return;
 
-        let message = channel.messages.cache.get(giveaway.messageId);
+        let message = channel.messages.cache.get(giveaway.id);
         if (!message) {
             try {
-                message = await channel.messages.fetch(giveaway.messageId);
+                message = await channel.messages.fetch(giveaway.id);
             } catch {
                 message = undefined;
             }
@@ -231,13 +231,6 @@ export class BotClient extends Client {
             await message.delete()
         }
 
-    }
-
-    onToggleMaintenance() {
-
-        this.initStatusChange()
-
-        //TODO
     }
 
 

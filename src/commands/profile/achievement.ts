@@ -46,6 +46,7 @@ export default new Command({
 
         if (!member) return;
 
+
         const id = options.getInteger("id")?? 1;
 
         try {

@@ -7,14 +7,13 @@ import {
     ModalSubmitInteraction,
     TextChannel
 } from "discord.js";
-import {config, saveState, state} from "../../index";
+import {saveState, state} from "../../index";
 
 export default class CreateGiveaway implements ModalSubmitHandler {
 
     id = "giveaways-modal"
 
     async run(interaction: ModalSubmitInteraction): Promise<any> {
-        const id = interaction.fields.getTextInputValue("id");
         const title = interaction.fields.getTextInputValue("title");
         const description = interaction.fields.getTextInputValue("description");
         const timeStr = interaction.fields.getTextInputValue("time");
@@ -55,7 +54,7 @@ export default class CreateGiveaway implements ModalSubmitHandler {
             });
         }
 
-        await interaction.guild?.channels.fetch(config.channels.announcements_channel)
+        await interaction.guild?.channels.fetch("channelID")
             .then(channel => channel as TextChannel)
             .then(async channel => {
                 if (!channel) return await interaction.reply("Canal não encontrado!");
@@ -76,24 +75,23 @@ export default class CreateGiveaway implements ModalSubmitHandler {
                             .setDescription(description)
                             .setColor("#00FFFF")
                             .setThumbnail("https://imgs.search.brave.com/t-1ucU_rF-Fxb_XoKpsAMgW7_q59d2TZFWRw0qpkPig/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pbWcu/aWNvbnM4LmNvbS8_/c2l6ZT0xMjAwJmlk/PUQ1cnpBUjRkRTZ4/RSZmb3JtYXQ9anBn")
-                            .setFooter({text: `Término: ${formatted}`})
-                    ],
-                    components: [
-                        new ActionRowBuilder<ButtonBuilder>()
-                            .addComponents(
-                                new ButtonBuilder()
-                                    .setEmoji("🎟️")
-                                    .setLabel("Entrar")
-                                    .setStyle(ButtonStyle.Success)
-                                    .setCustomId(`giveaway_${id}`)
-                            )
+                            .setFooter({ text: `Término: ${formatted}` })
                     ],
                     content: "<@&1432574364716499038>"
-                })
+                });
+
+                const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+                    new ButtonBuilder()
+                        .setEmoji("🎟️")
+                        .setLabel("Entrar")
+                        .setStyle(ButtonStyle.Success)
+                        .setCustomId(`giveaway_${message.id}`)
+                );
+
+                await message.edit({ components: [row] });
 
                 const giveaway = {
-                    id: id,
-                    messageId: message.id,
+                    id: message.id,
                     title: title,
                     description: description,
                     end: targetDate.getTime(),

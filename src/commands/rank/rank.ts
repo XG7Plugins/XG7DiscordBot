@@ -202,11 +202,17 @@ export async function generateImage(member: GuildMember, profile: Profile) {
     ctx.font = "bold 28px Bauhaus";
     ctx.fillStyle = "#ffffff";
 
-    ctx.fillText(`🗨️ ${profile.messages}`, 412, statsY);
+    const messageText = "🗨️ " + profile.messages;
+    ctx.font = `bold ${messageText.length > 7 ? "22px" : "28px"} Bauhaus`;
+    ctx.fillText(messageText, 412, statsY);
 
-    ctx.fillText(`📢 ${formatTime(profile.voiceTime)}`, 606, statsY);
+    const voiceText = `📢 ${formatTime(profile.voiceTime)}`;
+    ctx.font = `bold ${voiceText.length > 12 ? "18px" : voiceText.length > 7 ? "22px" : "28px"} Bauhaus`;
+    ctx.fillText(voiceText, 606, statsY);
 
-    ctx.fillText(`🏆 ${profile.digitGameVictories}`, 806, statsY);
+    const digitText = `🏆 ${profile.digitGameVictories}`;
+    ctx.font = `bold ${digitText.length > 7 ? "22px" : "28px"} Bauhaus`;
+    ctx.fillText(digitText, 806, statsY);
 
     // ====== SALVAR ======
     const buffer = canvas.toBuffer("image/png");

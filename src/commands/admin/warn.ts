@@ -141,7 +141,7 @@ function seeWarnings(repo: WarningsRepository, userId: string, interaction: any)
             return interaction.editReply("Esse usuário não possui avisos.");
         }
 
-        let sb = "Avisos de " + interaction.guild?.members.cache.get(userId)?.user.tag + ` **(${warnings.length})**:
+        let sb = "Avisos de <@" + userId + `> **(${warnings.length})**:
 `;
         warnings.forEach(warning => {
             sb += `\`ID: ${warning.id} Motivo: ${warning.reason}\`\n`

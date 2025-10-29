@@ -3,6 +3,7 @@ import config from "./data/config.json";
 import {DatabasePool} from "./types/Database";
 import fileS from "fs";
 import path from "path";
+import {DigitGame} from "./types/DigitGame";
 
 export * from "colors";
 
@@ -10,6 +11,8 @@ const client = new BotClient()
 client.init();
 
 const database = new DatabasePool()
+
+const digitGame = new DigitGame();
 
 const STATE_PATH = path.resolve(process.cwd(), "data", "state.json");
 
@@ -24,7 +27,7 @@ export function saveState() {
 }
 
 
-export { client, config, database, state };
+export { client, config, database, state, digitGame };
 
 client.on("clientReady", () => {
     database.init()

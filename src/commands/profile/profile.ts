@@ -427,7 +427,7 @@ export async function generateImage(member: GuildMember, profile: Profile) {
     ctx.fillStyle = "#ffffff";
 
     const bioText = profile.bio.length == 0
-        ? "Membro importante para XG7Community :3. Sabia que dá para trocar essa bio com o comando /profile bio?"
+        ? "Membro importante para XG7Community :3. Sabia que dá para trocar essa bio com o comando /perfil bio?"
         : profile.bio;
 
     drawTextWrapped(ctx, bioText, bioX, bioY, footerWidth, 40);

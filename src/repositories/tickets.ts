@@ -12,7 +12,7 @@ export default class TicketsRepository implements Repository<string, Ticket> {
             `CREATE TABLE IF NOT EXISTS ${this.table} (
             id VARCHAR(255) NOT NULL UNIQUE,
             owner_id VARCHAR(255) NOT NULL UNIQUE,
-            category ENUM('plugin', 'bug', 'sugestão', 'denúncia', 'outro') NOT NULL,
+            type ENUM('plugin', 'bug', 'sugestão', 'denúncia', 'outro') NOT NULL,
             closed BOOLEAN NOT NULL DEFAULT FALSE,
             created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY(id)
@@ -24,7 +24,7 @@ export default class TicketsRepository implements Repository<string, Ticket> {
     }
     insert(value: Ticket): Promise<void> {
         return database.query(
-            `INSERT INTO ${this.table} (id, owner_id, category) VALUES (?,?, ?)`,
+            `INSERT INTO ${this.table} (id, owner_id, type) VALUES (?,?, ?)`,
             [value.id, value.owner_id, value.type]
         )
     }

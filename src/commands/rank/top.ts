@@ -39,6 +39,8 @@ export default new Command({
     },
     run: async ({ interaction, options }) => {
 
+        await interaction.deferReply()
+
         const guild = client.getMainGuild();
 
         if (!guild) return
@@ -59,20 +61,20 @@ export default new Command({
         const pageNumber = options.getInteger("page") ?? 1;
 
         if (pageNumber < 0 || pageNumber > Math.floor(guild.members.cache.size / 10 + 1)) {
-            await interaction.reply({content: "Página fora do limite!", flags: MessageFlags.Ephemeral});
+            await interaction.editReply({content: "Página fora do limite!"});
             return
         }
 
         getOrCreateProfile(user.id).then(async profile => {
 
-            if (!profile) return await interaction.reply("Perfil não encontrado.");
+            if (!profile) return await interaction.editReply("Perfil não encontrado.");
 
             await saveTime(member, profile, false);
 
             await generateTopImage(pageNumber, type, member, profile);
 
             const attachment = new AttachmentBuilder("./src/assets/generated/top.png");
-            await interaction.reply({ files: [attachment], flags: MessageFlags.IsComponentsV2, components: [TopComponent(pageNumber, Math.floor(guild.members.cache.size / 10) + 1, type)] });
+            await interaction.editReply({ files: [attachment], flags: MessageFlags.IsComponentsV2, components: [TopComponent(pageNumber, Math.floor(guild.members.cache.size / 10) + 1, type)] });
 
 
         }).catch(err => {
