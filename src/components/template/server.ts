@@ -33,11 +33,21 @@ export default function ServerComponent(res: any) {
 
     const infoSection = [];
     if (online) {
+
+        const motdLines: string[] = res.motd?.clean?.split("\n") || ["Sem mensagem"];
+
+
         infoSection.push(
             new TextDisplayBuilder().setContent(`Versão: **${res.version?.name_clean || "Desconhecida"}**`),
             new TextDisplayBuilder().setContent(`Jogadores: **${res.players?.online || 0}/${res.players?.max || 0}**`),
-            new TextDisplayBuilder().setContent(`Motd: ${res.motd?.clean?.replace(/\n/g, " ") || "Sem mensagem"}`)
+            new TextDisplayBuilder().setContent(`MOTD:`)
         );
+
+        motdLines.forEach(line => {
+            infoSection.push(
+                new TextDisplayBuilder().setContent(line)
+            );
+        });
     } else {
         infoSection.push(
             new TextDisplayBuilder().setContent("O servidor está offline ou não respondeu à consulta.")
