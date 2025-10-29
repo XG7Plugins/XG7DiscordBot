@@ -46,7 +46,7 @@ export default new Listener({
 
             if (!profile) return await interaction.editReply("Perfil não encontrado.");
 
-            await generateTopImage(page, type as "messages" | "xp" | "voice", member, profile);
+            await generateTopImage(page, type as "messages" | "xp" | "voice");
 
             const attachment = new AttachmentBuilder("./src/assets/generated/top.png");
 

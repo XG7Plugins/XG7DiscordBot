@@ -61,11 +61,8 @@ export default new Command({
  * Gera imagem de perfil (rank card)
  */
 export async function generateImage(member: GuildMember, profile: Profile) {
-
-    const {level, xpForNextLevel, currentLevelXp} = getLevelInfo(profile.xp);
-
+    const { level, xpForNextLevel, currentLevelXp } = getLevelInfo(profile.xp);
     const guild = client.getMainGuild();
-
     if (!guild) return;
 
     const repo = database.repositories.get("profiles") as ProfileRepository;
@@ -73,152 +70,135 @@ export async function generateImage(member: GuildMember, profile: Profile) {
 
     const leaderboardPos = await repo.getUserPosition(profile.id);
 
+    // ====== IMAGENS ======
     const bg = await loadImage("./src/assets/images/rank_bg.png");
+    const chat = await loadImage("./src/assets/icons/balao-de-fala.png");
+    const coracao = await loadImage("./src/assets/icons/coracao.png");
+    const diamante = await loadImage("./src/assets/icons/diamante.png");
+    const estrela = await loadImage("./src/assets/icons/estrela.png");
+    const martelo = await loadImage("./src/assets/icons/martelo.png");
+    const megafone = await loadImage("./src/assets/icons/megafone.png");
+    const trofeu = await loadImage("./src/assets/icons/trofeu.png");
+
+    registerFont("./src/assets/font/Bauhaus.ttf", { family: "Bauhaus" });
+
     const canvas = createCanvas(bg.width, bg.height);
     const ctx = canvas.getContext("2d");
 
-    registerFont('./src/assets/font/Bauhaus.ttf', { family: 'Bauhaus' });
-    registerFont('./src/assets/font/NotoColorEmoji.ttf', { family: 'Emoji' });
-
-    // Fundo
+    // ====== FUNDO ======
     ctx.drawImage(bg, 0, 0);
 
-    // ====== FOTO DO USUÁRIO ======
+    // ====== AVATAR ======
     const avatar = await loadImage(member.displayAvatarURL({ extension: "png", size: 256 }));
     const avatarSize = 170;
     const avatarX = 163.45;
     const avatarY = 124.5;
-    ctx.save();
-
     const radius = 20;
-    ctx.beginPath();
-    ctx.roundRect(avatarX - avatarSize/2, avatarY - avatarSize/2, avatarSize, avatarSize, radius);
-    ctx.clip();
 
-    ctx.drawImage(
-        avatar,
-        avatarX - avatarSize / 2 ,
-        avatarY - avatarSize / 2 ,
-        avatarSize,
-        avatarSize
-    );
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(avatarX - avatarSize / 2, avatarY - avatarSize / 2, avatarSize, avatarSize, radius);
+    ctx.clip();
+    ctx.drawImage(avatar, avatarX - avatarSize / 2, avatarY - avatarSize / 2, avatarSize, avatarSize);
     ctx.restore();
 
     // ====== LEVEL ======
-
-    const lvlX = 163.45
-    const lvlY = 260.5
-
     ctx.textAlign = "center";
-    ctx.font = "bold 32px Emoji, Bauhaus";
+    ctx.font = "bold 32px Bauhaus";
     ctx.fillStyle = "#ffffff";
-    ctx.fillText(`Nível: ${level}`, lvlX, lvlY);
-
+    ctx.fillText(`Nível: ${level}`, 163.45, 260.5);
 
     // ====== RANK ======
-    const rankX = 859.64
-    const rankY = 75
-
     ctx.textAlign = "center";
-    ctx.font = "bold 52px Emoji, Bauhaus";
+    ctx.font = "bold 52px Bauhaus";
     ctx.fillStyle = "#ffffff";
-    ctx.fillText(`#${leaderboardPos.position}`, rankX, rankY);
+    ctx.fillText(`#${leaderboardPos.position}`, 859.64, 75);
 
-    // ====== NOME ======
+    // ====== NOME  ======
+    const colorRoles: string[] = [...config.colors.normal, ...config.colors.vip];
+    const memberColorRole = member.roles.cache.filter(r => colorRoles.includes(r.id)).first();
 
-    const colorRoles: string[] = [
-        ...config.colors.normal,
-        ...config.colors.vip
-    ];
-
-    const memberColorRole = member.roles.cache
-        .filter(r => colorRoles.includes(r.id))
-        .first();
-
-    let displayName = member.user.username;
-
-    if (member.roles.cache.has("1235570566778327152")) displayName += "💎"
-    if (member.roles.cache.hasAny("1328930300364849203", "1424094092304056492")) displayName += "🌟"
-    if (member.roles.cache.has("1364270135564566538")) displayName += "⚒️"
-    if (member.roles.cache.has("1348081207925018624")) displayName += "💖"
-
-    const nameX = 380
-    const nameY = 75
-
+    const nameX = 380;
+    const nameY = 75;
     ctx.textAlign = "left";
+    ctx.font = "bold 32px Bauhaus";
 
-    ctx.font = `bold ${displayName.length > 20 ? "24px": "32px"} Emoji, Bauhaus`;
-
+    const fontSize = 32;
+    const iconSize = fontSize * 0.9;
+    let offsetX = nameX;
 
     ctx.lineWidth = 2;
     ctx.strokeStyle = "#ffffff";
-    ctx.strokeText(displayName, nameX, nameY);
-
+    ctx.strokeText(member.user.username, offsetX, nameY);
     ctx.fillStyle = memberColorRole ? memberColorRole.hexColor : "#ffffff";
-    ctx.fillText(displayName, nameX, nameY);
+    ctx.fillText(member.user.username, offsetX, nameY);
+    offsetX += ctx.measureText(member.user.username).width + 10;
+
+    if (member.roles.cache.has("1235570566778327152")) {
+        ctx.drawImage(diamante, offsetX, nameY - iconSize * 0.8, iconSize, iconSize);
+        offsetX += iconSize + 6;
+    }
+    if (member.roles.cache.hasAny("1328930300364849203", "1424094092304056492")) {
+        ctx.drawImage(estrela, offsetX, nameY - iconSize * 0.8, iconSize, iconSize);
+        offsetX += iconSize + 6;
+    }
+    if (member.roles.cache.has("1364270135564566538")) {
+        ctx.drawImage(martelo, offsetX, nameY - iconSize * 0.8, iconSize, iconSize);
+        offsetX += iconSize + 6;
+    }
+    if (member.roles.cache.has("1348081207925018624")) {
+        ctx.drawImage(coracao, offsetX, nameY - iconSize * 0.8, iconSize, iconSize);
+    }
 
     // ====== BARRA DE XP ======
-    const barX = 609; // centro da barra
+    const barX = 609;
     const barY = bg.height / 2;
     const barWidth = 561;
     const barHeight = 38;
-
     const progress = Math.min((profile.xp - currentLevelXp) / (xpForNextLevel - currentLevelXp), 1);
 
-    // Barra de progresso
     ctx.fillStyle = "#00a4ea";
     ctx.beginPath();
     ctx.roundRect(barX - barWidth / 2, barY - barHeight / 2, barWidth * progress, barHeight, radius);
     ctx.fill();
 
-
-    // Texto XP
-    ctx.font = "bold 22px Emoji, Bauhaus";
+    ctx.font = "bold 22px Bauhaus";
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(`${profile.xp}/${xpForNextLevel}`, barX, barY);
-
     ctx.textBaseline = "alphabetic";
 
     // ====== PRÓXIMO CARGO ======
-
     const nextRole = getNextRoleLevel(level);
-
     let role = null;
-
-    if (nextRole) {
-        role = await guild.roles.fetch(nextRole.role)
-    }
+    if (nextRole) role = await guild.roles.fetch(nextRole.role);
 
     ctx.fillText(`${nextRole ? "Próximo cargo: " + role?.name : "Você já obteve todos os cargos!"}`, barX, barY + 40);
 
-    ctx.textBaseline = "alphabetic";
-
-
     // ====== ESTATÍSTICAS ======
-
     const statsY = 355;
-
-    ctx.textAlign = "center";
-    ctx.font = "bold 28px Emoji, Bauhaus";
+    ctx.textAlign = "right";
     ctx.fillStyle = "#ffffff";
 
-    const messageText = "🗨️ " + profile.messages;
-    ctx.font = `bold ${messageText.length > 7 ? "22px" : "28px"} Emoji, Bauhaus`;
-    ctx.fillText(messageText, 412, statsY);
+    // Mensagens
+    ctx.font = `bold ${profile.messages.toString().length > 6 ? "20px" : "28px"} Bauhaus`;
+    ctx.fillText(profile.messages.toString(), 477, statsY);
+    ctx.drawImage(chat, 347, statsY - 24, 28, 28);
 
-    const voiceText = `📢 ${formatTime(profile.voiceTime)}`;
-    ctx.font = `bold ${voiceText.length > 12 ? "18px" : voiceText.length > 7 ? "22px" : "28px"} Emoji, Bauhaus`;
-    ctx.fillText(voiceText, 606, statsY);
+    // Tempo de voz
+    ctx.font = `bold ${formatTime(profile.voiceTime).length > 6 ? "20px" : "28px"} Bauhaus`;
+    ctx.fillText(formatTime(profile.voiceTime), 671, statsY);
+    ctx.drawImage(megafone, 541, statsY - 24, 28, 28);
 
-    const digitText = `🏆 ${profile.digitGameVictories}`;
-    ctx.font = `bold ${digitText.length > 7 ? "22px" : "28px"} Emoji, Bauhaus`;
-    ctx.fillText(digitText, 806, statsY);
+    // Vitorias
+    ctx.font = `bold ${profile.digitGameVictories.toString().length > 10 ? "16px" : profile.digitGameVictories.toString().length > 6 ? "18px" : "28px"} Bauhaus`;
+    ctx.fillText(profile.digitGameVictories.toString(), 871, statsY);
+    ctx.drawImage(trofeu, 741, statsY - 24, 28, 28);
 
     // ====== SALVAR ======
     const buffer = canvas.toBuffer("image/png");
-    writeFileSync(`./src/assets/generated/rank.png`, buffer);
+    writeFileSync("./src/assets/generated/rank.png", buffer);
 }
 
 function formatTime(ms: number): string {

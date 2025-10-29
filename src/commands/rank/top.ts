@@ -1,5 +1,5 @@
 import {Command} from "../../types/discord/Command";
-import {AttachmentBuilder, GuildMember, MessageFlags, SlashCommandBuilder} from "discord.js";
+import {AttachmentBuilder, MessageFlags, SlashCommandBuilder} from "discord.js";
 import {InteractionContextType} from "discord-api-types/v10";
 import ProfileRepository, {getLevelInfo, getOrCreateProfile} from "../../repositories/profile";
 import {saveTime} from "../../listeners/ranks/call";
@@ -7,7 +7,6 @@ import {client, database} from "../../index";
 import {createCanvas, loadImage, registerFont} from "canvas";
 import {writeFileSync} from "fs";
 import TopComponent from "../../components/template/top";
-import {Profile} from "../../types/database/models/Profile";
 
 export default new Command({
     build() {
@@ -71,7 +70,7 @@ export default new Command({
 
             await saveTime(member, profile, false);
 
-            await generateTopImage(pageNumber, type, member, profile);
+            await generateTopImage(pageNumber, type);
 
             const attachment = new AttachmentBuilder("./src/assets/generated/top.png");
             await interaction.editReply({ files: [attachment], flags: MessageFlags.IsComponentsV2, components: [TopComponent(pageNumber, Math.floor(guild.members.cache.size / 10) + 1, type)] });
@@ -87,7 +86,7 @@ export default new Command({
 /**
  * Gera imagem de TOP
  */
-export async function generateTopImage(page: number, type: "messages" | "xp" | "voice", member: GuildMember, profile: Profile) {
+export async function generateTopImage(page: number, type: "messages" | "xp" | "voice") {
     const guild = client.getMainGuild();
     if (!guild) return;
     const repo = database.repositories.get("profiles") as ProfileRepository;
@@ -96,9 +95,11 @@ export async function generateTopImage(page: number, type: "messages" | "xp" | "
     const leaderboard = await repo.getLeaderboard(type, page * 10);
 
     const img = await loadImage("./src/assets/images/top_bg.png");
+    const chat = await loadImage("./src/assets/icons/balao-de-fala.png");
+    const xpIcon = await loadImage("./src/assets/icons/xp.png");
+    const megafone = await loadImage("./src/assets/icons/megafone.png");
 
     registerFont('./src/assets/font/Bauhaus.ttf', { family: 'Bauhaus' });
-    registerFont('./src/assets/font/NotoColorEmoji.ttf', { family: 'Emoji' });
 
     const spacing = 20;
 
@@ -111,7 +112,7 @@ export async function generateTopImage(page: number, type: "messages" | "xp" | "
     const avatarSize = 56;
     const rowHeight = img.height + 10; // adiciona espaço transparente entre linhas
 
-    ctx.font = '20px Emoji, Bauhaus';
+    ctx.font = '20px Bauhaus';
     ctx.fillStyle = '#ffffff';
     ctx.textBaseline = 'middle';
 
@@ -121,7 +122,7 @@ export async function generateTopImage(page: number, type: "messages" | "xp" | "
     let i = 0;
     let pos = start;
 
-    for (const { id, point } of leaderboard.slice(start, Math.min(end, leaderboard.length))) {
+    for (const { id, point, xp } of leaderboard.slice(start, Math.min(end, leaderboard.length))) {
         const user = users.get(id);
         if (!user) continue;
 
@@ -146,15 +147,26 @@ export async function generateTopImage(page: number, type: "messages" | "xp" | "
         ctx.restore();
 
         // nome de usuário
-        const text = `#${pos + 1} . ${user.user.username} ${type === "xp" ? "(" + getLevelInfo(profile.xp).level.toString() + ")" : ""}`;
+        const text = `#${pos + 1} . ${user.user.username} ${type === "xp" ? "(" + getLevelInfo(xp).level.toString() + ")" : ""}`;
         ctx.textAlign = "left";
         ctx.fillText(text, avatarSize + spacing * 2, y + img.height / 2);
 
         // pontuação
-        const pointText = type === "voice" ? formatTime(point) + "📢" : type === "messages" ?
-            point.toString() + "🗨️" : point.toString() + "💎";
+        const pointX = img.width - spacing;
+        const pointY = y + img.height / 2;
         ctx.textAlign = "right";
-        ctx.fillText(pointText, img.width - spacing, y + img.height / 2);
+        ctx.fillStyle = "#ffffff";
+
+        if (type === "voice") {
+            ctx.fillText(formatTime(point), pointX - 24, pointY);
+            ctx.drawImage(megafone, pointX - 20, pointY - 12, 24, 24);
+        } else if (type === "messages") {
+            ctx.fillText(point.toString(), pointX - 24, pointY);
+            ctx.drawImage(chat, pointX - 20, pointY - 12, 24, 24);
+        } else if (type === "xp") {
+            ctx.fillText(point.toString(), pointX - 24, pointY);
+            ctx.drawImage(xpIcon, pointX - 20, pointY - 12, 24, 24);
+        }
 
         i++;
         pos++;

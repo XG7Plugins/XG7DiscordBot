@@ -333,7 +333,11 @@ export async function generateImage(member: GuildMember, profile: Profile) {
     const ctx = canvas.getContext("2d");
 
     registerFont('./src/assets/font/Bauhaus.ttf', { family: 'Bauhaus' });
-    registerFont('./src/assets/font/NotoColorEmoji.ttf', { family: 'Emoji' });
+
+    const coracao = await loadImage("./src/assets/icons/coracao.png");
+    const diamante = await loadImage("./src/assets/icons/diamante.png");
+    const estrela = await loadImage("./src/assets/icons/estrela.png");
+    const martelo = await loadImage("./src/assets/icons/martelo.png");
 
     // ====== FUNDO ======
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
@@ -374,34 +378,43 @@ export async function generateImage(member: GuildMember, profile: Profile) {
 
     ctx.textAlign = "center";
 
-    const textX = avatarX + avatarSize / 2; // centro do avatar
+    const textX = avatarX + avatarSize / 2;
     const textY = avatarY + avatarSize + 40;
 
-    let displayName = member.user.username;
-
-    if (member.roles.cache.has("1235570566778327152")) displayName += "💎"
-    if (member.roles.cache.hasAny("1328930300364849203", "1424094092304056492")) displayName += "🌟"
-    if (member.roles.cache.has("1364270135564566538")) displayName += "⚒️"
-    if (member.roles.cache.has("1348081207925018624")) displayName += "💖"
-
-    ctx.font = `${displayName.length > 11 ? "32px": "48px"} Emoji, Bauhaus`;
+    const fontSize = member.user.username.length > 11 ? 32 : 48;
+    ctx.font = `${fontSize}px Bauhaus`;
     ctx.lineWidth = 2;
     ctx.strokeStyle = "#ffffff";
-    ctx.strokeText(displayName, textX, textY);
-
     ctx.fillStyle = memberColorRole ? memberColorRole.hexColor : "#ffffff";
-    ctx.fillText(displayName, textX, textY);
 
-    ctx.lineWidth = 0;
+    ctx.strokeText(member.user.username, textX, textY);
+    ctx.fillText(member.user.username, textX, textY);
+
+    const iconSize = fontSize * 0.9;
+    const icons = [];
+
+    if (member.roles.cache.has("1235570566778327152")) icons.push(diamante);
+    if (member.roles.cache.hasAny("1328930300364849203", "1424094092304056492")) icons.push(estrela);
+    if (member.roles.cache.has("1364270135564566538")) icons.push(martelo);
+    if (member.roles.cache.has("1348081207925018624")) icons.push(coracao);
+
+    const totalWidth = icons.length * iconSize + (icons.length - 1) * 6;
+    let startX = textX - totalWidth / 2;
+    const iconY = textY + 10; // 10px abaixo do nome
+
+    icons.forEach(icon => {
+        ctx.drawImage(icon, startX, iconY, iconSize, iconSize);
+        startX += iconSize + 6;
+    });
 
     // ====== Cargo ======
 
     ctx.textAlign = "center";
 
     const roleX = avatarX + avatarSize / 2; // centro do avatar
-    const roleY = avatarY + avatarSize + 80;
+    const roleY = 480;
 
-    ctx.font = `bold 32px Emoji, Bauhaus`;
+    ctx.font = `bold 32px Bauhaus`;
 
     ctx.fillStyle = "#ffffff";
     ctx.fillText(getRoleLevel(member.guild, getLevelInfo(profile.xp).level)?? "Iniciante", roleX, roleY);
@@ -422,7 +435,7 @@ export async function generateImage(member: GuildMember, profile: Profile) {
     const bioX = 30; // centro do avatar
     const bioY = footerY + 50;
 
-    ctx.font = `32px Emoji, Bauhaus`;
+    ctx.font = `32px Bauhaus`;
     ctx.lineWidth = 3;
 
     ctx.fillStyle = "#ffffff";

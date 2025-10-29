@@ -97,7 +97,6 @@ export async function generateAchievementImage(member: GuildMember, achievement:
     const profA = profile.profileAchievements.find(a => a.achievement.id === achievement.id);
 
     registerFont('./src/assets/font/Bauhaus.ttf', { family: 'Bauhaus' });
-    registerFont('./src/assets/font/NotoColorEmoji.ttf', { family: 'Emoji' });
 
     // ====== BACKGROUND ======
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -151,13 +150,13 @@ export async function generateAchievementImage(member: GuildMember, achievement:
     ctx.textAlign = "center";
     ctx.fillStyle = "#ffffff";
 
-    ctx.font = 'bold 96px "Emoji, Bauhaus"';
+    ctx.font = 'bold 96px "Bauhaus"';
     ctx.fillText(achievement.name, canvas.width / 2, 550);
 
-    ctx.font = '52px "Emoji, Bauhaus"';
+    ctx.font = '52px "Bauhaus"';
     ctx.fillText(achievement.description, canvas.width / 2, 620);
 
-    ctx.font = '32px "Emoji, Bauhaus"';
+    ctx.font = '32px "Bauhaus"';
     ctx.fillText(
         profA ? "Obtido em " + profA.obtainedAt.toLocaleDateString("pt-BR") : "Não obtido ainda",
         canvas.width / 2,

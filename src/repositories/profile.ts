@@ -153,18 +153,18 @@ export default class ProfileRepository implements Repository<string, Profile> {
         }
     }
 
-    async getLeaderboard(type: "messages" | "xp" | "voice", limit: number = 10): Promise<{id: string, point: number}[]> {
+    async getLeaderboard(type: "messages" | "xp" | "voice", limit: number = 10): Promise<{id: string, point: number, xp: number}[]> {
 
         const translatedType = type === "voice" ? "voiceTime" : type;
 
         const [rows] = await database.query(
-            `SELECT id, ${translatedType}
+            `SELECT id, ${translatedType}${translatedType === "xp" ? ', xp' : ''}
              FROM ${this.table}
              ORDER BY ${translatedType} DESC
                  LIMIT ?`,
             [limit]
         );
-        return rows.map((r: any) => ({ id: r.id, point: Number(r[translatedType]) }));
+        return rows.map((r: any) => ({ id: r.id, point: Number(r[translatedType]), xp: Number(r.xp) }));
     }
 
     async getUserPosition(userId: string): Promise<{position: number, xp: number}> {
@@ -314,7 +314,6 @@ export async function generateImage(member: GuildMember, oldLevel: number, newLe
     const ctx = canvas.getContext("2d");
 
     registerFont('./src/assets/font/Bauhaus.ttf', { family: 'Bauhaus' });
-    registerFont('./src/assets/font/NotoColorEmoji.ttf', { family: 'Emoji' });
 
     // Fundo
     ctx.drawImage(bg, 0, 0);
@@ -345,7 +344,7 @@ export async function generateImage(member: GuildMember, oldLevel: number, newLe
     const levelX = 606
 
     ctx.textAlign = "center";
-    ctx.font = "bold 48px Emoji, Bauhaus";
+    ctx.font = "bold 48px Bauhaus";
     ctx.fillStyle = "#ffffff";
     ctx.fillText(`Nível: ${oldLevel} - ${newLevel}`, levelX, 140.5);
 
