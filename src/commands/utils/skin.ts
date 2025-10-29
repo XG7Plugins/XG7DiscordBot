@@ -21,7 +21,6 @@ export default new Command({
                     .setRequired(false)
             );
     },
-    isGlobal: true,
 
     async run({ interaction, options }) {
 

@@ -12,7 +12,7 @@ export default class TicketsRepository implements Repository<string, Ticket> {
             `CREATE TABLE IF NOT EXISTS ${this.table} (
             id VARCHAR(255) NOT NULL UNIQUE,
             owner_id VARCHAR(255) NOT NULL UNIQUE,
-            type ENUM('plugin', 'bug', 'sugestão', 'denúncia', 'outro') NOT NULL,
+            type ENUM('plugin', 'bug', 'sugestão', 'denuncia', 'aplicacao', 'outro') NOT NULL,
             closed BOOLEAN NOT NULL DEFAULT FALSE,
             created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY(id)
@@ -109,6 +109,10 @@ export async function createTicket(member: GuildMember, type: string): Promise<T
             components: TicketComponent(ticket as Ticket, member),
             flags: [MessageFlags.IsComponentsV2]
         })
+
+        if (type === "aplicacao") {
+            channel.send("📝 Por favor, responda às seguintes perguntas para completar sua aplicação:\n\n1. Qual é o seu nome completo?\n2. Qual é a sua idade?\n3. Compartilhe o github ou algum projeto conosco.\n4. Você tem alguma pergunta para nós?\n\nLogo logo alguém da equipe irá atendê-lo(a)");
+        }
 
         await repo.insert(ticket as Ticket);
         return ticket as Ticket;

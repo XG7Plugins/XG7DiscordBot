@@ -6,8 +6,8 @@ import PluginComponent from "../../components/template/plugin";
 export default new Command({
     build() {
         return new SlashCommandBuilder()
-            .setName("ver-plugin")
-            .setDescription("Veja as descrições de um plugin")
+            .setName("plugin")
+            .setDescription("Veja as descrições de um plugin XG7")
             .addStringOption(option =>
                 option
                     .setName("name")
@@ -21,8 +21,6 @@ export default new Command({
                     .setRequired(false)
             );
     },
-
-    isGlobal: true,
 
     run: async({ interaction, options }) => {
         await interaction.deferReply({flags: [MessageFlags.Ephemeral]});
@@ -51,6 +49,7 @@ export default new Command({
                 });
             })
             .catch(async err => {
+                console.error("Erro ao buscar plugin:", err);
                 await interaction.followUp({
                     content: `⚠️ Erro inesperado: ${err}`,
                     flags: [MessageFlags.Ephemeral],

@@ -20,7 +20,8 @@ export function SetupTicketComponent() {
         .addSectionComponents(new SectionBuilder()
             .addTextDisplayComponents(
                 new TextDisplayBuilder().setContent("# Abra um ticket"),
-                new TextDisplayBuilder().setContent("Precisa de ajuda com algum plugin ou algo do servidor? Abra um ticket agora!")
+                new TextDisplayBuilder().setContent("Precisa de ajuda com algum plugin ou algo do servidor? Abra um ticket agora!"),
+                new TextDisplayBuilder().setContent("Se abrir um ticket sem motivo, pode ser considerado off topic e terá punição!"),
             )
             .setThumbnailAccessory(new ThumbnailBuilder().setURL("https://cdn-icons-png.flaticon.com/128/6030/6030249.png").setDescription("Tickets"))
         )
@@ -49,17 +50,24 @@ export function SetupTicketComponent() {
                                     }),
                                 new StringSelectMenuOptionBuilder()
                                     .setLabel("Sugestão")
-                                    .setValue("sugestão")
+                                    .setValue("sugestao")
                                     .setDescription("Quer recomendar um novo recurso para o servidor? Deixe-nos saber!")
                                     .setEmoji({
                                         name: "💡",
                                     }),
                                 new StringSelectMenuOptionBuilder()
                                     .setLabel("Denúncia")
-                                    .setValue("denúncia")
+                                    .setValue("denuncia")
                                     .setDescription("Quer denunciar algum membro que esteja quebrando as regras? Avise-nos!")
                                     .setEmoji({
                                         name: "🚫",
+                                    }),
+                                new StringSelectMenuOptionBuilder()
+                                    .setLabel("Aplicação")
+                                    .setValue("aplicacao")
+                                    .setDescription("Quer aplicar para ser desenvolvedor verificado no servidor? Crie este ticket!")
+                                    .setEmoji({
+                                        name: "⚒️",
                                     }),
                                 new StringSelectMenuOptionBuilder()
                                     .setLabel("Outro")

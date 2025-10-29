@@ -7,5 +7,5 @@ export type Ticket = {
     createdAt: Date | undefined;
 }
 
-export type TicketType = "plugin" | "bug" | "sugestão" | "denúncia" | "outro";
+export type TicketType = "plugin" | "bug" | "sugestao" | "denuncia" | "aplicacao" | "outro";
 
