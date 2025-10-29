@@ -154,12 +154,15 @@ export class DigitGame {
 
         if (this.gameState.state !== "waiting") return
 
+        let player = this.gameState.scores.find(s => s.id === user.id);
+
+        if (!player) {
+            player = { id: user.id, score: 0 };
+            this.gameState.scores.push(player);
+        }
+
         if (word.toLowerCase().includes(this.gameState.word.toLowerCase())) {
-
-            const player = this.gameState.scores.find(s => s.id === user.id);
-
-            if (player) player.score += 1;
-            else this.gameState.scores.push({ id: user.id, score: 1 });
+            player.score += 1;
 
             await channel.send(`<@${user.id}> Digitou a palavra correta!`)
 
