@@ -44,7 +44,7 @@ export class DigitGame {
             .setTitle(`Jogo do dígito!`)
             .setColor("Aqua")
             .setThumbnail("https://imgs.search.brave.com/G6g-Q6ZGRzefJ5htRS226atNocq07PtUckJa6NVtoWE/rs:fit:0:180:1:0/g:ce/aHR0cHM6Ly9jZG4t/aWNvbnMtcG5nLmZs/YXRpY29uLmNvbS8x/MjgvNTgzMi81ODMy/NzczLnBuZw")
-            .setDescription("Jogo do dígito iniciando! Fique atento para o próximo dígito a ser enviado.")
+            .setDescription("Jogo do dígito iniciando! Fique atento à próxima palavra a ser enviada! O Objetivo é digitar a palavra certa o mais rápido possível!")
             .setFooter({ text: "Começando em 5 segundos..." });
 
         await channel.send({
