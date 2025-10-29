@@ -47,9 +47,9 @@ export const achievements: Achievement[] = [
     { id: AchievementID.AquiEMinhaCasa, name: "Aqui é minha casa!", xp: 100000, description: "Fique 1 semana em call no total", bannerURL: "./src/assets/images/achievements/casa.jpg" },
 
     // JOGO
-    { id: AchievementID.PrimeiraVitoria, name: "Primeira vitória", xp: 100000, description: "Ganhe uma vez no jogo do dígito", bannerURL: "./src/assets/images/achievements/vitoria.jpg" },
-    { id: AchievementID.MaosRapidas, name: "Mãos rápidas", xp: 100000, description: "Ganhe 10 vezes no jogo do dígito", bannerURL: "./src/assets/images/achievements/maos.jpg" },
-    { id: AchievementID.EALuz, name: "É a luz?", xp: 100000, description: "Ganhe 100 vezes no jogo do dígito", bannerURL: "./src/assets/images/achievements/ealuz.jpg" },
+    { id: AchievementID.PrimeiraVitoria, name: "Primeira vitória", xp: 1000, description: "Ganhe uma vez no jogo do dígito", bannerURL: "./src/assets/images/achievements/vitoria.jpg" },
+    { id: AchievementID.MaosRapidas, name: "Mãos rápidas", xp: 10000, description: "Ganhe 10 vezes no jogo do dígito", bannerURL: "./src/assets/images/achievements/maos.jpg" },
+    { id: AchievementID.EALuz, name: "É a luz?", xp: 500000, description: "Ganhe 100 vezes no jogo do dígito", bannerURL: "./src/assets/images/achievements/ealuz.jpg" },
 
     // Desafio
     { id: AchievementID.Dormiu, name: "Dormiu?", xp: 100000, description: "Fique 24h simultâneas em call", bannerURL: "./src/assets/images/achievements/dormiu.jpg" },
