@@ -6,6 +6,8 @@ export default class ColorHandler implements SelectMenuHandler {
     id = "select_color_role";
     async run(interaction: StringSelectMenuInteraction): Promise<void> {
 
+        await interaction.deferReply({flags: MessageFlags.Ephemeral});
+
         const selectedRoleId = interaction.values[0];
 
         const guild = client.getMainGuild();
@@ -25,7 +27,7 @@ export default class ColorHandler implements SelectMenuHandler {
         await member.roles.add("1431116471349805167");
         await member.roles.add(selectedRoleId);
 
-        await interaction.reply({content: "Cor alterada com sucesso!", flags: MessageFlags.Ephemeral})
+        await interaction.editReply({content: "Cor alterada com sucesso!"})
 
     }
 
