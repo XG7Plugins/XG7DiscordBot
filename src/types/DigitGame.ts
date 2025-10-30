@@ -2,7 +2,7 @@ import {client} from "../index";
 import {EmbedBuilder, GuildMember, TextChannel} from "discord.js";
 import {createCanvas} from "canvas"
 import * as fs from "node:fs";
-import {addXP, getOrCreateProfile} from "../repositories/profile";
+import {addXP, getOrCreateProfile, updateProfile} from "../repositories/profile";
 import {awardAchievementToProfile} from "../repositories/profile_achievements";
 import {AchievementID, getAchievement} from "./database/models/Achievements";
 
@@ -224,6 +224,8 @@ export class DigitGame {
                             if (profile.digitGameVictories == 100) {
                                 await awardAchievementToProfile(member, profile, getAchievement(AchievementID.EALuz))
                             }
+
+                            await updateProfile(member.id, profile)
                         }
                     })
                 }
