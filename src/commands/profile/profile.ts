@@ -130,6 +130,12 @@ export default new Command({
 
         }
 
+        const member = guild.members.cache.get(interaction.user.id)
+            || await guild.members.fetch(interaction.user.id).catch(() => null);
+
+        if (!member) return;
+
+
         getOrCreateProfile(interaction.user.id).then(async profile => {
 
             if (!profile) return await interaction.editReply("Perfil não encontrado.");
@@ -146,7 +152,7 @@ export default new Command({
                 const url = options.getString("url");
                 const random = options.getBoolean("aleatório", true);
 
-                return banner(interaction, profile, random, id, url, file)
+                return banner(interaction, member, profile, random, id, url, file)
             }
 
 
@@ -180,7 +186,7 @@ async function bio(interaction: CommandInteraction, profile: Profile, text: stri
     await interaction.editReply({content: "Perfil atualizado com sucesso!"});
 
 }
-async function banner(interaction: CommandInteraction, profile: Profile, random: boolean, id: number | null, url: string | null, file: Attachment | null) {
+async function banner(interaction: CommandInteraction, member: GuildMember, profile: Profile, random: boolean, id: number | null, url: string | null, file: Attachment | null) {
 
     if (random) {
         const id = Math.floor(Math.random() * profileBGCount) + 1;
@@ -200,7 +206,16 @@ async function banner(interaction: CommandInteraction, profile: Profile, random:
 
     let image: Attachment | AttachmentBuilder | undefined;
 
+    const isVIP = member.roles.cache.hasAny("1424094092304056492", "1328930300364849203", "1235570566778327152");
+
+
     if (url) {
+
+        if (!isVIP) {
+            await interaction.editReply({ content: "Você não tem o cargo necessário para fazer essa ação!"});
+            return;
+        }
+
         try {
             const response = await fetch(url);
 
@@ -227,6 +242,12 @@ async function banner(interaction: CommandInteraction, profile: Profile, random:
     }
 
     if (file) {
+
+        if (!isVIP) {
+            await interaction.editReply({ content: "Você não tem o cargo necessário para fazer essa ação!"});
+            return;
+        }
+
         image = file;
         image.name = `banner-${profile.id}.jpg`;
     }
