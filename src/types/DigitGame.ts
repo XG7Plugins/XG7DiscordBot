@@ -67,7 +67,7 @@ export class DigitGame {
             return
         }
 
-        if (this.gameState.step > 50) {
+        if (this.gameState.step >= 50) {
             this.gameState!.state = "finished";
             this.processGame(channel);
             return
