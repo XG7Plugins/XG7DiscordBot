@@ -102,6 +102,7 @@ export async function generateTopImage(page: number, type: "messages" | "xp" | "
     const chat = await loadImage("./src/assets/icons/balao-de-fala.png");
     const xpIcon = await loadImage("./src/assets/icons/xp.png");
     const megafone = await loadImage("./src/assets/icons/megafone.png");
+    const trofeu = await loadImage("./src/assets/icons/trofeu.png");
 
     registerFont('./src/assets/font/Bauhaus.ttf', { family: 'Bauhaus' });
 
@@ -170,6 +171,9 @@ export async function generateTopImage(page: number, type: "messages" | "xp" | "
         } else if (type === "xp") {
             ctx.fillText(point.toString(), pointX - 24, pointY);
             ctx.drawImage(xpIcon, pointX - 20, pointY - 12, 24, 24);
+        } else if (type === "digit") {
+            ctx.fillText(point.toString(), pointX - 24, pointY);
+            ctx.drawImage(trofeu, pointX - 20, pointY - 12, 24, 24);
         }
 
         i++;
