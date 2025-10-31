@@ -153,9 +153,9 @@ export default class ProfileRepository implements Repository<string, Profile> {
         }
     }
 
-    async getLeaderboard(type: "messages" | "xp" | "voice", limit: number = 10): Promise<{id: string, point: number, xp: number}[]> {
+    async getLeaderboard(type: "messages" | "xp" | "voice" | "digit", limit: number = 10): Promise<{id: string, point: number, xp: number}[]> {
 
-        const translatedType = type === "voice" ? "voiceTime" : type;
+        const translatedType = type === "voice" ? "voiceTime" : type === "digit" ? "digitGameVictories" : type;
 
         const [rows] = await database.query(
             `SELECT id, ${translatedType}${translatedType === "xp" ? ', xp' : ''}

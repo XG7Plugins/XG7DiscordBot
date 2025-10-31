@@ -9,12 +9,13 @@ import {
 } from "discord.js";
 import {MediaGalleryItemBuilder} from "@discordjs/builders";
 
-export default function TopComponent(pageNumber: number, maxPage: number, type: "messages" | "xp" | "voice") {
+export default function TopComponent(pageNumber: number, maxPage: number, type: "messages" | "xp" | "voice" | "digit") {
 
     const title =
-        type === "messages" ? "## 💎 TOP 10 de mensagens"
-            : type === "xp" ? "## 💎 TOP 10 de XP"
-                : "## 💎 TOP 10 de tempo em call acumulado";
+        type === "messages" ? "## 🗨️ TOP 10 de mensagens"
+            : type === "xp" ? "## 💎 TOP 10 de XP" :
+            type === "digit" ? "## 🏆 TOP 10 de tempo em call acumulado"
+                : "## 🗣️ TOP 10 de tempo em call acumulado";
 
     return new ContainerBuilder()
         .addTextDisplayComponents(

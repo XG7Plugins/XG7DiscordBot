@@ -19,19 +19,23 @@ export default new Command({
                     .setName("messages")
                     .setDescription("Ver top de mensagens")
                     .addIntegerOption(option => option.setName("page").setDescription("Página").setRequired(false))
-
             )
             .addSubcommand(sub =>
                 sub
                     .setName("voice")
                     .setDescription("Ver top tempo em call")
                     .addIntegerOption(option => option.setName("page").setDescription("Página").setRequired(false))
-
             )
             .addSubcommand(sub =>
                 sub
                     .setName("xp")
                     .setDescription("Ver top de xp")
+                    .addIntegerOption(option => option.setName("page").setDescription("Página").setRequired(false))
+            )
+            .addSubcommand(sub =>
+                sub
+                    .setName("digit")
+                    .setDescription("Ver top do jogo do dígito")
                     .addIntegerOption(option => option.setName("page").setDescription("Página").setRequired(false))
             );
 
@@ -55,7 +59,7 @@ export default new Command({
 
         if (!member) return;
 
-        const type = options.getSubcommand() as "messages" | "xp" | "voice";
+        const type = options.getSubcommand() as "messages" | "xp" | "voice" | "digit";
 
         const pageNumber = options.getInteger("page") ?? 1;
 
@@ -86,7 +90,7 @@ export default new Command({
 /**
  * Gera imagem de TOP
  */
-export async function generateTopImage(page: number, type: "messages" | "xp" | "voice") {
+export async function generateTopImage(page: number, type: "messages" | "xp" | "voice" | "digit") {
     const guild = client.getMainGuild();
     if (!guild) return;
     const repo = database.repositories.get("profiles") as ProfileRepository;

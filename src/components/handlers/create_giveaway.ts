@@ -7,7 +7,7 @@ import {
     ModalSubmitInteraction,
     TextChannel
 } from "discord.js";
-import {saveState, state} from "../../index";
+import {config, saveState, state} from "../../index";
 
 export default class CreateGiveaway implements ModalSubmitHandler {
 
@@ -54,7 +54,7 @@ export default class CreateGiveaway implements ModalSubmitHandler {
             });
         }
 
-        await interaction.guild?.channels.fetch("channelID")
+        await interaction.guild?.channels.fetch(config.channels.announcements_channel)
             .then(channel => channel as TextChannel)
             .then(async channel => {
                 if (!channel) return await interaction.reply("Canal não encontrado!");
