@@ -14,7 +14,7 @@ export default function TopComponent(pageNumber: number, maxPage: number, type: 
     const title =
         type === "messages" ? "## 🗨️ TOP 10 de mensagens"
             : type === "xp" ? "## 💎 TOP 10 de XP" :
-            type === "digit" ? "## 🏆 TOP 10 de tempo em call acumulado"
+            type === "digit" ? "## 🏆 TOP 10 vítorias no jogo do dígito"
                 : "## 🗣️ TOP 10 de tempo em call acumulado";
 
     return new ContainerBuilder()
