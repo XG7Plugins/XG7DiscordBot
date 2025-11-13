@@ -37,7 +37,7 @@ export default new Listener({
         const award = async (aID: AchievementID) => {
             const achievement = getAchievement(aID);
             if (achievement)
-                await awardAchievementToProfile(member, profile, achievement);
+                await awardAchievementToProfile(member, undefined, profile, achievement);
         };
 
 
@@ -59,7 +59,7 @@ export async function saveTime(member: GuildMember, profile: Profile, deleteFrom
     const award = async (aID: AchievementID) => {
         const achievement = getAchievement(aID);
         if (achievement)
-            await awardAchievementToProfile(member, profile, achievement);
+            await awardAchievementToProfile(member, undefined, profile, achievement);
     };
 
     const start = activeTimes.get(profile.id);
@@ -73,7 +73,7 @@ export async function saveTime(member: GuildMember, profile: Profile, deleteFrom
 
     const minutes = time / 60000;
 
-    await addXP(member, profile, minutes * 10)
+    await addXP(member, undefined, profile, minutes * 10)
 
     await updateProfile(profile.id, profile)
 

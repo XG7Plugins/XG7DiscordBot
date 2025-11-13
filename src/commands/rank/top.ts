@@ -1,5 +1,5 @@
 import {Command} from "../../types/discord/Command";
-import {AttachmentBuilder, MessageFlags, SlashCommandBuilder} from "discord.js";
+import {AttachmentBuilder, MessageFlags, SlashCommandBuilder, User} from "discord.js";
 import {InteractionContextType} from "discord-api-types/v10";
 import ProfileRepository, {getLevelInfo, getOrCreateProfile} from "../../repositories/profile";
 import {saveTime} from "../../listeners/ranks/call";
@@ -48,7 +48,6 @@ export default new Command({
 
         if (!guild) return
 
-        await guild.members.fetch()
 
         const user = options.getUser("user")?? interaction.user;
 
@@ -63,7 +62,7 @@ export default new Command({
 
         const pageNumber = options.getInteger("page") ?? 1;
 
-        if (pageNumber < 0 || pageNumber > Math.floor(guild.members.cache.size / 10 + 1)) {
+        if (pageNumber < 0 || pageNumber > Math.floor(guild.memberCount / 10 + 1)) {
             await interaction.editReply({content: "Página fora do limite!"});
             return
         }
@@ -77,7 +76,7 @@ export default new Command({
             await generateTopImage(pageNumber, type);
 
             const attachment = new AttachmentBuilder("./src/assets/generated/top.png");
-            await interaction.editReply({ files: [attachment], flags: MessageFlags.IsComponentsV2, components: [TopComponent(pageNumber, Math.floor(guild.members.cache.size / 10) + 1, type)] });
+            await interaction.editReply({ files: [attachment], flags: MessageFlags.IsComponentsV2, components: [TopComponent(pageNumber, Math.floor(guild.memberCount / 10) + 1, type)] });
 
 
         }).catch(err => {
@@ -87,8 +86,8 @@ export default new Command({
     }
 });
 
-/**
- * Gera imagem de TOP
+/*
+    GERA IMAGEM DE TOP
  */
 export async function generateTopImage(page: number, type: "messages" | "xp" | "voice" | "digit") {
     const guild = client.getMainGuild();
@@ -96,7 +95,7 @@ export async function generateTopImage(page: number, type: "messages" | "xp" | "
     const repo = database.repositories.get("profiles") as ProfileRepository;
     if (!repo) return;
 
-    const leaderboard = await repo.getLeaderboard(type, page * 10);
+    const leaderboard = await repo.getLeaderboard(type, page, 10);
 
     const img = await loadImage("./src/assets/images/top_bg.png");
     const chat = await loadImage("./src/assets/icons/balao-de-fala.png");
@@ -111,25 +110,35 @@ export async function generateTopImage(page: number, type: "messages" | "xp" | "
     const canvas = createCanvas(img.width, (img.height) * 10 + spacing * 5.5);
     const ctx = canvas.getContext("2d");
 
+    const users = await Promise.all(
+        leaderboard.map(async (l): Promise<User | null> => {
+            const cached = guild.members.cache.get(l.id);
+            if (cached) return cached.user;
 
-    const users = await guild.members.fetch();
+            const member = await guild.members.fetch(l.id).catch(() => null);
+            if (member) return member.user;
+
+            return await client.users.fetch(l.id).catch(() => null);
+        })
+    );
 
     const avatarSize = 56;
-    const rowHeight = img.height + 10; // adiciona espaço transparente entre linhas
+    const rowHeight = img.height + 10;
 
     ctx.font = '20px Bauhaus';
     ctx.fillStyle = '#ffffff';
     ctx.textBaseline = 'middle';
 
-    const start = (page - 1) * 10;
-    const end = page * 10;
-
     let i = 0;
-    let pos = start;
+    const startRank = (page - 1) * 10;
 
-    for (const { id, point, xp } of leaderboard.slice(start, Math.min(end, leaderboard.length))) {
-        const user = users.get(id);
-        if (!user) continue;
+    for (const { point, xp } of leaderboard) {
+        const user = users[i];
+
+        if (!user) {
+            i++;
+            continue;
+        }
 
         const y = i * rowHeight + spacing;
 
@@ -144,7 +153,7 @@ export async function generateTopImage(page: number, type: "messages" | "xp" | "
 
         ctx.save();
         ctx.beginPath();
-        ctx.roundRect(avatarX, avatarY, avatarSize, avatarSize, 10); // ← sem subtrair avatarSize/2
+        ctx.roundRect(avatarX, avatarY, avatarSize, avatarSize, 10);
         ctx.closePath();
         ctx.clip();
 
@@ -152,7 +161,8 @@ export async function generateTopImage(page: number, type: "messages" | "xp" | "
         ctx.restore();
 
         // nome de usuário
-        const text = `#${pos + 1} . ${user.user.username} ${type === "xp" ? "(" + getLevelInfo(xp).level.toString() + ")" : ""}`;
+        const rank = startRank + i + 1; // ✅ Calcula a posição correta
+        const text = `#${rank} . ${user.username} ${type === "xp" ? "(" + getLevelInfo(xp).level.toString() + ")" : ""}`;
         ctx.textAlign = "left";
         ctx.fillText(text, avatarSize + spacing * 2, y + img.height / 2);
 
@@ -177,7 +187,6 @@ export async function generateTopImage(page: number, type: "messages" | "xp" | "
         }
 
         i++;
-        pos++;
     }
 
     const buffer = canvas.toBuffer("image/png");

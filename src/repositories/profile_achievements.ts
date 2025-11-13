@@ -2,8 +2,8 @@ import { Repository } from "../types/database/Repository";
 import {Achievement, Profile, ProfileAchievement} from "../types/database/models/Profile";
 import { database } from "../index";
 import {getAchievementByNumber} from "../types/database/models/Achievements";
-import {AttachmentBuilder, GuildMember} from "discord.js";
-import {addXP} from "./profile";
+import {AttachmentBuilder, GuildMember, Message} from "discord.js";
+import {addXP, prohibitedCategories} from "./profile";
 import {generateAchievementImage} from "../commands/profile/achievement";
 
 export default class ProfileAchievementsRepository implements Repository<number, ProfileAchievement> {
@@ -67,6 +67,7 @@ export default class ProfileAchievementsRepository implements Repository<number,
 
 export async function awardAchievementToProfile(
     member: GuildMember,
+    message: Message | undefined,
     profile: Profile,
     achievement: Achievement
 ): Promise<void> {
@@ -84,7 +85,7 @@ export async function awardAchievementToProfile(
         obtainedAt: new Date()
     });
 
-    await addXP(member, profile, achievement.xp);
+    await addXP(member, message, profile, achievement.xp);
 
     profile.profileAchievements.push({
         profile_id: profile.id,
@@ -96,8 +97,17 @@ export async function awardAchievementToProfile(
 
     const attachment = new AttachmentBuilder(`./src/assets/generated/achievement.png`);
 
-    member.send({
-            content: `Você conseguiu a conquista **${achievement.name}**!\nGanhando ${achievement.xp}XP.`,
-            files: [attachment],
-        }).catch(() => {});
+    const channel = message?.channel;
+
+    if (channel && ('parentId' in channel && !prohibitedCategories.includes(<string>channel.parentId))) {
+        message.reply({
+            content: `<@${member.id}> conseguiu a conquista **${achievement.name}**!\nGanhando ${achievement.xp}XP.`,
+            files: [attachment]
+        }).catch(() => null)
+    } else {
+        member.send({
+            content: `Parabéns <@${member.id}>, você conseguiu a conquista **${achievement.name}**!\nGanhando ${achievement.xp}XP.`,
+            files: [attachment]
+        }).catch(() => null);
+    }
 }

@@ -24,7 +24,7 @@ export default new Listener({
         getOrCreateProfile(member.id).then(async profile => {
             if (!profile) return
 
-            await addXP(member, profile, 40)
+            await addXP(member, undefined, profile, 40)
         })
 
     }

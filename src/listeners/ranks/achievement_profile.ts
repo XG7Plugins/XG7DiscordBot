@@ -25,9 +25,8 @@ export default new Listener({
 
         if (!guild) return
 
-        await guild.members.fetch();
-
         const member = guild.members.cache.get(memberID)
+            || await guild.members.fetch(memberID).catch(() => null);
 
         if (!member) return;
 

@@ -24,8 +24,6 @@ export default new Listener({
 
         if (!guild) return
 
-        await guild.members.fetch();
-
         if (!giveaway) {
             await interaction.editReply({content: "Erro ao encontrar o giveaway!"});
             return;

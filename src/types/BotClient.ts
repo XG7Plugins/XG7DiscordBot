@@ -105,10 +105,9 @@ export class BotClient extends Client {
         console.log("Eventos registrados com sucesso!".blue)
     }
 
-    private registerComponentsHandlers() {
-        fileS.readdirSync(path.join(__dirname, "..", "components", "handlers"))
-            .filter(file => file.endsWith(".js") || file.endsWith(".ts"))
-            .forEach(async (handlersFile) => {
+    private async registerComponentsHandlers() {
+        for (const handlersFile of fileS.readdirSync(path.join(__dirname, "..", "components", "handlers"))
+            .filter(file => file.endsWith(".js") || file.endsWith(".ts"))) {
 
                 const HandlerClass = (await import (`../components/handlers/${handlersFile}`))?.default;
                 const handler: ComponentHandler<any> = new HandlerClass();
@@ -118,8 +117,10 @@ export class BotClient extends Client {
                 } catch (err) {
                     console.log(err)
                 }
-            })
-        console.log("Foram registrados " + this.componentHandlers.size + " manipuladores de componentes".blue)
+            }
+
+        console.log(("Foram registrados " + this.componentHandlers.size + " manipuladores de componentes").blue)
+
 
     }
 

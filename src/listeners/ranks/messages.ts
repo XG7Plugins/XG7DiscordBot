@@ -30,7 +30,7 @@ export default new Listener({
             xp += 10 * (1 + message.content.length / 2 * 0.001)
         }
 
-        await addXP(member, profile, xp)
+        await addXP(member, message, profile, xp)
 
         profile.messages = profile.messages + 1;
 
@@ -39,7 +39,7 @@ export default new Listener({
         const award = async (aID: AchievementID) => {
             const achievement = getAchievement(aID);
             if (achievement)
-                await awardAchievementToProfile(member, profile, achievement);
+                await awardAchievementToProfile(member, message, profile, achievement);
         };
 
         switch (profile.messages) {

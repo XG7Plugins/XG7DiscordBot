@@ -211,18 +211,18 @@ export class DigitGame {
                     getOrCreateProfile(member.id).then(async profile => {
                         if (!profile) return;
 
-                        await addXP(member, profile, xp)
+                        await addXP(member, undefined, profile, xp)
 
                         if (i === 0) {
                             profile.digitGameVictories++;
 
-                            await awardAchievementToProfile(member, profile, getAchievement(AchievementID.PrimeiraVitoria))
+                            await awardAchievementToProfile(member, undefined, profile, getAchievement(AchievementID.PrimeiraVitoria))
 
                             if (profile.digitGameVictories == 10) {
-                                await awardAchievementToProfile(member, profile, getAchievement(AchievementID.MaosRapidas))
+                                await awardAchievementToProfile(member, undefined, profile, getAchievement(AchievementID.MaosRapidas))
                             }
                             if (profile.digitGameVictories == 100) {
-                                await awardAchievementToProfile(member, profile, getAchievement(AchievementID.EALuz))
+                                await awardAchievementToProfile(member, undefined, profile, getAchievement(AchievementID.EALuz))
                             }
 
                             await updateProfile(member.id, profile)

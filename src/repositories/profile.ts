@@ -2,7 +2,7 @@ import {Repository} from "../types/database/Repository";
 import {Profile} from "../types/database/models/Profile";
 import {client, database} from "../index";
 import console from "node:console";
-import {AttachmentBuilder, GuildMember, Snowflake} from "discord.js";
+import {AttachmentBuilder, GuildMember, Message, Snowflake} from "discord.js";
 import {AchievementID, getAchievement, getAchievementByNumber} from "../types/database/models/Achievements";
 import {awardAchievementToProfile} from "./profile_achievements";
 import * as fs from "node:fs";
@@ -153,18 +153,29 @@ export default class ProfileRepository implements Repository<string, Profile> {
         }
     }
 
-    async getLeaderboard(type: "messages" | "xp" | "voice" | "digit", limit: number = 10): Promise<{id: string, point: number, xp: number}[]> {
+    async getLeaderboard(
+        type: "messages" | "xp" | "voice" | "digit",
+        page: number = 1,
+        pageSize: number = 10
+    ): Promise<{id: string, point: number, xp: number}[]> {
 
         const translatedType = type === "voice" ? "voiceTime" : type === "digit" ? "digitGameVictories" : type;
 
+        const offset = (page - 1) * pageSize;
+
         const [rows] = await database.query(
             `SELECT id, ${translatedType}${translatedType === "xp" ? ', xp' : ''}
-             FROM ${this.table}
-             ORDER BY ${translatedType} DESC
-                 LIMIT ?`,
-            [limit]
+         FROM ${this.table}
+         ORDER BY ${translatedType} DESC
+         LIMIT ? OFFSET ?`,
+            [pageSize, offset]
         );
-        return rows.map((r: any) => ({ id: r.id, point: Number(r[translatedType]), xp: Number(r.xp) }));
+
+        return rows.map((r: any) => ({
+            id: r.id,
+            point: Number(r[translatedType]),
+            xp: Number(r.xp)
+        }));
     }
 
     async getUserPosition(userId: string): Promise<{position: number, xp: number}> {
@@ -231,7 +242,19 @@ export async function updateProfile(id: string, changes: Partial<Profile>): Prom
         })
 }
 
-export async function addXP(member: GuildMember, profile: Profile, xp: number): Promise<Profile | null> {
+const prohibitedCategories = [
+    "1431115765561425920",
+    "1328552440093474826",
+    "1434612542042411038",
+    "1409565933529206896",
+    "1409565992564293682",
+    "1409566021089628181",
+    "1347547392299237469"
+]
+
+export { prohibitedCategories };
+
+export async function addXP(member: GuildMember, lastMessage: Message | undefined, profile: Profile, xp: number): Promise<Profile | null> {
     const repo = database.repositories.get("profiles") as ProfileRepository;
     if (!repo) return null;
 
@@ -267,13 +290,24 @@ export async function addXP(member: GuildMember, profile: Profile, xp: number): 
 
         await generateImage(member, oldLevel, newLevel);
 
-        member.send({
-            content: "Parabéns! Você atingiu o level " + newLevel + " no XG7Plugins! (" + newLevel + "/77)",
-            files: [new AttachmentBuilder("./src/assets/generated/level_up.png")]
-        }).catch(() => null);
+        const channel = lastMessage?.channel;
+
+        if (channel && ('parentId' in channel && !prohibitedCategories.includes(<string>channel.parentId))) {
+            lastMessage.reply({
+                content: `O <@${member.id}> atingiu o level ${newLevel} no XG7Plugins! (${newLevel}/77)`,
+                files: [new AttachmentBuilder("./src/assets/generated/level_up.png")]
+            }).catch(() => null)
+        } else {
+            member.send({
+                content: `Parabéns <@${member.id}>! Você atingiu o level ${newLevel} no XG7Plugins! (${newLevel}/77)`,
+                files: [new AttachmentBuilder("./src/assets/generated/level_up.png")]
+            }).catch(() => null);
+        }
+
+
 
         if (newLevel == 77) {
-            await awardAchievementToProfile(member, profile, getAchievement(AchievementID.Mestre))
+            await awardAchievementToProfile(member, undefined, profile, getAchievement(AchievementID.Mestre))
         }
 
         const reward = levelRewards[newLevel];

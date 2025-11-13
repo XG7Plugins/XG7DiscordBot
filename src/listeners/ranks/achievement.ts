@@ -26,7 +26,6 @@ export default new Listener({
 
         if (!guild) return
 
-        await guild.members.fetch();
 
         if (page < 0) {
             await interaction.editReply({content: "Página fora do limite!"});
