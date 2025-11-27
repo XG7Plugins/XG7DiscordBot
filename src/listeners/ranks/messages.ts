@@ -64,7 +64,7 @@ export default new Listener({
 
         }
 
-        if (["1328545995709222943", "1347545817665507450"].includes(message.channelId) && message.attachments.size > 0 || message.content.includes("https://")) {
+        if (["1328545995709222943", "1347545817665507450"].includes(message.channelId) && (message.attachments.size > 0 || message.content.includes("https://"))) {
             await award(AchievementID.OlhaQueEngracadoKKKK)
         }
 
