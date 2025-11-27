@@ -85,7 +85,7 @@ export async function awardAchievementToProfile(
         obtainedAt: new Date()
     });
 
-    await addXP(member, message, profile, achievement.xp);
+    await addXP(member, message, profile, achievement.xp, true);
 
     profile.profileAchievements.push({
         profile_id: profile.id,

@@ -254,7 +254,7 @@ const prohibitedCategories = [
 
 export { prohibitedCategories };
 
-export async function addXP(member: GuildMember, lastMessage: Message | undefined, profile: Profile, xp: number): Promise<Profile | null> {
+export async function addXP(member: GuildMember, lastMessage: Message | undefined, profile: Profile, xp: number, ignoreMultiplier?: boolean): Promise<Profile | null> {
     const repo = database.repositories.get("profiles") as ProfileRepository;
     if (!repo) return null;
 
@@ -265,7 +265,7 @@ export async function addXP(member: GuildMember, lastMessage: Message | undefine
     if (profile.messages >= 100000) multiplier *= 2
 
 
-    const newXP = Math.round(profile.xp + xp * multiplier);
+    const newXP = Math.round(profile.xp + xp * (ignoreMultiplier ? 1 : multiplier));
     const newLevel = getLevelInfo(newXP).level;
 
     const oldLevel = getLevelInfo(profile.xp).level;
