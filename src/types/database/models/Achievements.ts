@@ -39,7 +39,7 @@ export const achievements: Achievement[] = [
     { id: AchievementID.RedacaoEnem, name: "Redação do Enem", xp: 5000, description: "Envie 1000 mensagens no servidor", bannerURL: "./src/assets/images/achievements/redacao.jpg" },
     { id: AchievementID.Dicionario, name: "Dicionário", xp: 500000, description: "Envie 10.000 mensagens no servidor", bannerURL: "./src/assets/images/achievements/dicionario.jpg" },
     { id: AchievementID.Biblioteca, name: "Biblioteca", xp: 1000000, description: "Envie 100.000 mensagens no servidor", bannerURL: "./src/assets/images/achievements/biblioteca.jpg" },
-    { id: AchievementID.OlhaQueEngracadoKKKK, name: "Olha que engraçaado KKKK", xp: 500, description: "Envie em meme no canal de memes", bannerURL: "./src/assets/images/achievements/lol.jpg" },
+    { id: AchievementID.OlhaQueEngracadoKKKK, name: "Olha que engraçado KKKK", xp: 500, description: "Envie em meme no canal de memes", bannerURL: "./src/assets/images/achievements/lol.jpg" },
 
 
     // Call
