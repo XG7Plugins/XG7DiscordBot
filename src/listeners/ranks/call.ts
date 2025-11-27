@@ -17,7 +17,7 @@ export default new Listener({
 
         const guild = client.getMainGuild();
 
-        const afkChannelId = config.channels.afk_channel;
+        const afkChannelsId = [config.channels.afk_channel, config.channels.lofi_channel];
 
         const profile = await getOrCreateProfile(userId)
 
@@ -43,9 +43,9 @@ export default new Listener({
 
         await award(AchievementID.EntreEmCall)
 
-        if ((!oldChannel || oldChannel.id === afkChannelId) && newChannel?.id !== afkChannelId) activeTimes.set(userId, Date.now());
+        if ((!oldChannel || afkChannelsId.includes(oldChannel.id)) && afkChannelsId.includes(newChannel == null ? "" : newChannel.id)) activeTimes.set(userId, Date.now());
 
-        if (oldChannel && (!newChannel || newChannel?.id === afkChannelId)) {
+        if (oldChannel && (!newChannel || afkChannelsId.includes(newChannel.id))) {
 
             await saveTime(member, profile, true);
         }
@@ -73,7 +73,7 @@ export async function saveTime(member: GuildMember, profile: Profile, deleteFrom
 
     const minutes = time / 60000;
 
-    await addXP(member, undefined, profile, minutes * 10)
+    await addXP(member, undefined, profile, minutes * 77)
 
     await updateProfile(profile.id, profile)
 
@@ -82,6 +82,7 @@ export async function saveTime(member: GuildMember, profile: Profile, deleteFrom
     const HOUR_6 = 6 * 60 * 60 * 1000;   // 6 horas
     const HOUR_24 = 24 * 60 * 60 * 1000; // 24 horas
     const WEEK_1 = 7 * 24 * 60 * 60 * 1000; // 1 semana
+    const HOUR_12_CONT = 12 * 60 * 60 * 1000; // tempo contínuo
     const HOUR_24_CONT = 24 * 60 * 60 * 1000; // tempo contínuo
     const HOUR_36_CONT = 36 * 60 * 60 * 1000;
     const HOUR_48_CONT = 48 * 60 * 60 * 1000;
@@ -92,6 +93,7 @@ export async function saveTime(member: GuildMember, profile: Profile, deleteFrom
     if (profile.voiceTime >= HOUR_24) await award(AchievementID.SoMaisUma);
     if (profile.voiceTime >= WEEK_1) await award(AchievementID.AquiEMinhaCasa);
 
+    if (time >= HOUR_12_CONT) await award(AchievementID.MeioDia);
     if (time >= HOUR_24_CONT) await award(AchievementID.Dormiu);
     if (time >= HOUR_36_CONT) await award(AchievementID.Desocupado);
     if (time >= HOUR_48_CONT) await award(AchievementID.JaTocouNaGrama);

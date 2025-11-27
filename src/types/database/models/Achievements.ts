@@ -7,6 +7,7 @@ export enum AchievementID {
     RedacaoEnem = 3,
     Dicionario = 4,
     Biblioteca = 5,
+    OlhaQueEngracadoKKKK = 20,
 
     // Call
     EntreEmCall = 6,
@@ -25,7 +26,9 @@ export enum AchievementID {
     Dormiu = 15,
     Desocupado = 16,
     JaTocouNaGrama = 17,
-    Mestre = 18
+    Mestre = 18,
+    MeioDia = 19,
+    VIP = 21,
 }
 
 // Array de conquistas
@@ -36,6 +39,7 @@ export const achievements: Achievement[] = [
     { id: AchievementID.RedacaoEnem, name: "Redação do Enem", xp: 5000, description: "Envie 1000 mensagens no servidor", bannerURL: "./src/assets/images/achievements/redacao.jpg" },
     { id: AchievementID.Dicionario, name: "Dicionário", xp: 500000, description: "Envie 10.000 mensagens no servidor", bannerURL: "./src/assets/images/achievements/dicionario.jpg" },
     { id: AchievementID.Biblioteca, name: "Biblioteca", xp: 1000000, description: "Envie 100.000 mensagens no servidor", bannerURL: "./src/assets/images/achievements/biblioteca.jpg" },
+    { id: AchievementID.OlhaQueEngracadoKKKK, name: "Olha que engraçaado KKKK", xp: 500, description: "Envie em meme no canal de memes", bannerURL: "./src/assets/images/achievements/lol.jpg" },
 
 
     // Call
@@ -52,10 +56,12 @@ export const achievements: Achievement[] = [
     { id: AchievementID.EALuz, name: "É a luz?", xp: 500000, description: "Ganhe 100 vezes no jogo do dígito", bannerURL: "./src/assets/images/achievements/ealuz.jpg" },
 
     // Desafio
+    { id: AchievementID.MeioDia, name: "Tatudo bem?", xp: 50000, description: "Fique 12h simultâneas em call", bannerURL: "./src/assets/images/achievements/tatu.jpg" },
     { id: AchievementID.Dormiu, name: "Dormiu?", xp: 100000, description: "Fique 24h simultâneas em call", bannerURL: "./src/assets/images/achievements/dormiu.jpg" },
     { id: AchievementID.Desocupado, name: "Desocupado", xp: 500000, description: "Fique 36 horas seguidas em call", bannerURL: "./src/assets/images/achievements/desocupado.png" },
     { id: AchievementID.JaTocouNaGrama, name: "Já tocou na grama?", xp: 1000000, description: "Fique 48 horas seguidas em call", bannerURL: "./src/assets/images/achievements/jatocounagrama.jpg" },
-    { id: AchievementID.Mestre, name: "Mestre", xp: 0, description: "Alcance o nível máximo", bannerURL: "./src/assets/images/achievements/mestre.jpg" }
+    { id: AchievementID.Mestre, name: "Mestre", xp: 0, description: "Alcance o nível máximo", bannerURL: "./src/assets/images/achievements/mestre.jpg" },
+    { id: AchievementID.VIP, name: "Você é um amigo", xp: 700000, description: "Seja apoiador pelo menos uma vez", bannerURL: "./src/assets/images/achievements/vip.jpg" }
 ];
 
 // Função para pegar Achievement por ID

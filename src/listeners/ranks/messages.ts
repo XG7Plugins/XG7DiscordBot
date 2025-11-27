@@ -26,7 +26,7 @@ export default new Listener({
 
         let xp = 10 * multiplier;
 
-        if (message.channelId === "1430398136668651561") {
+        if (["1430398136668651561", "1432827347710644425", "1432923991894397081", "1432928289382596719"].includes(message.channelId)) {
             xp += 10 * (1 + message.content.length / 2 * 0.001)
         }
 
@@ -62,6 +62,10 @@ export default new Listener({
                 await award(AchievementID.Biblioteca)
                 break
 
+        }
+
+        if (message.channelId == "1347545817665507450" && message.attachments.size > 0 || message.content.includes("https://")) {
+            await award(AchievementID.OlhaQueEngracadoKKKK)
         }
 
 

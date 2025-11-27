@@ -14,7 +14,7 @@ export default new Listener({
         if (!message.member) return
         if (message.author.bot) return
 
-        if (message.content.startsWith("dg.")) {
+        if (message.content.toLowerCase().startsWith("dg.")) {
 
             const command = message.content.slice(3).trim().toLowerCase();
 
